@@ -8,37 +8,45 @@
 </head>
 <body>
 
+  <section class="container">
+
   <section class="analisis-container">
 
     <div class="analisis_sismico-container">
       <h3>Analisis Sismico Dinamico</h3>
 
-      <label for="cap_por">Capacidad Portante</label>
-      <input type="number" name="cap_por" id="capacidadPortante">
-
-      <label for="fac_uso">Factor de Uso</label>
-      <input type="number" name="fac_uso" id="factorUso">
+      <div class="analisis_sismico_dinamico-container">
       
-      <label for="fac_zon">Factor de Zona</label>
-      <input type="number" name="fac_zon" id="factorZona">
+        <label for="capacidadPortante">Capacidad Portante</label>
+        <input type="number" name="cap_por" id="capacidadPortante">
 
-      <label for="fac_sue">Factor de suelo</label>
-      <input type="number" name="fac_sue id="factorSuelo">
+        <label for="factorUso">Factor de Uso</label>
+        <input type="number" name="fac_uso" id="factorUso">
+        
+        <label for="factorZona">Factor de Zona</label>
+        <input type="number" name="fac_zon" id="factorZona">
 
+        <label for="fac_sue">Factor de suelo</label>
+        <input type="number" name="fac_sue id="factorSuelo">
+      </div>
     </div>
+
     <div class="dimensiones_terreno-container">
       <h3>Dimensiones de Terreno</h3>
       
-      <label for="largo">Largo Y</label>
-      <input type="number" name="largo" id="largoY">
+      <div class="dimensiones_terreno_dinamico-container">
       
-      <label for="ancho">Ancho X</label>
-      <input type="number" name="ancho" id="anchoX">
+        <label for="largoY">Largo Y</label>
+        <input type="number" name="largo" id="largoY">
+        
+        <label for="anchoX">Ancho X</label>
+        <input type="number" name="ancho" id="anchoX">
+      </div>
     </div>
   </section>
 
-  <section>
-    <div>
+  <section class="cuadricula-container">
+    <div class="datos_cuadricula-container">
       <h3>Datos de Cuadricula X</h3>        
       <label for="gridIdX">Grid ID</label>
       <input type="number" name="gridIdX" id="">
@@ -46,30 +54,38 @@
       <label for="espaciadoX">Espaciado X</label>
       <input type="number" name="espaciadoX" id="">
 
-      <button>+</button>
-      <button>-</button>
     </div>
     <div>
+      <button class="btn-plus">+</button>
+      <button class="btn-monis">-</button>
+      
+    </div>
+
+    <div class="datos_cuadricula-container">
       <h3>Datos de Cuadricula Y</h3> 
       <label for="gridIdY">Grid ID</label>     
       <input type="number" name="gridIdY" id="">
 
       <label for="espaciadoY">Espaciado Y</label>
       <input type="number" name="espaciadoY" id="">
-
-      <button>+</button>
-      <button>-</button>
+  
+    </div>
+    <div>
+      <button class="btn-plus">+</button>
+      <button class="btn-minos">-</button>
 
     </div>
   </section>
 
-  <section> 
+  <section class="grabar-container"> 
     <button>Grabar</button>
   </section>
 
-  <section>
+  <section class="grafico-container">
     <div>grafico</div>
   </section>
+</section>
+
 
   <script src="./src/main.js"></script>
 </body>

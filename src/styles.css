@@ -1,0 +1,89 @@
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@700;100;300&display=swap');
+
+:root {
+  --yellow: #ffd602;
+  --red: #d5040a;
+  --blue: #036cb6;
+}
+
+body {
+  font-family: 'Lato', sans-serif;
+  height: 100vh;
+  margin: 0;
+  overflow: hidden;
+}
+
+/* general */
+.container {
+  position: absolute;
+  z-index: 1;
+
+  display: grid;
+  grid-template-columns: 60% 40%;
+  grid-template-rows: 30% 60% 10%;
+  grid-template-areas:  "nav      aside"
+                        "section  aside"
+                        "footer   aside";
+  height: 100%;
+  width: 100%;
+}
+
+/* FIRST SECTION */
+.analisis-container {
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+
+  grid-area: nav;
+}
+
+.analisis_sismico_dinamico-container{
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+}
+.dimensiones_terreno_dinamico-container {
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+}
+
+/* SECOND SECTION */
+.cuadricula-container{
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+
+  grid-area: section;
+}
+
+.datos_cuadricula-container {
+  display: grid;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+}
+
+/* THRID SECTION */
+.grabar-container{
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+
+  grid-area: footer;
+}
+
+/* GRAFITH SECTION */
+.grafico-container{
+  display: flex;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+
+  grid-area: aside;
+}
