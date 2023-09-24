@@ -14,21 +14,34 @@
   <section class="analisis-container">
 
     <div class="analisis_sismico-container">
-      <h3>Analisis Sismico Dinamico</h3>
+      <h3>Análisis Sismico Dinamico</h3>
 
       <div class="analisis_sismico_dinamico-container">
       
-        <label for="capacidadPortante">Capacidad Portante</label>
-        <input type="number" name="cap_por" id="capacidadPortante">
+        <div>
+          <label for="capacidadPortante">f'c Concreto</label>
+          <input type="number" name="cap_por" id="capacidadPortante">
 
-        <label for="factorUso">Factor de Uso</label>
-        <input type="number" name="fac_uso" id="factorUso">
+        </div>
+
+        <div>
+          <label for="factorUso">Factor de Uso</label>
+          <input type="number" name="fac_uso" id="factorUso">
+
+        </div>
+
+        <div>
+          <label for="factorZona">Factor de Zona</label>
+          <input type="number" name="fac_zon" id="factorZona">
+
+        </div>
+
+        <div>
+          <label for="fac_sue">Factor de suelo</label>
+          <input type="number" name="fac_sue" id="factorSuelo">
+
+        </div>
         
-        <label for="factorZona">Factor de Zona</label>
-        <input type="number" name="fac_zon" id="factorZona">
-
-        <label for="fac_sue">Factor de suelo</label>
-        <input type="number" name="fac_sue" id="factorSuelo">
       </div>
     </div>
 
@@ -36,12 +49,19 @@
       <h3>Dimensiones de Terreno</h3>
       
       <div class="dimensiones_terreno_dinamico-container">
-      
-        <label for="largoY">Largo Y</label>
-        <input type="number" name="largo" id="largoY">
         
-        <label for="anchoX">Ancho X</label>
-        <input type="number" name="ancho" id="anchoX">
+        <div class="container-dimensiones">
+          <label for="largoY">Largo Y</label>
+          <input type="number" name="largo" id="largoY">
+
+        </div>
+        <div>
+          <label for="anchoX">Ancho X</label>
+          <input type="number" name="ancho" id="anchoX">
+          
+        </div>
+        
+        
       </div>
     </div>
   </section>
