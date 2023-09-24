@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="./src/styles.css">
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <title>Open</title>
 </head>
 <body>
@@ -47,13 +48,32 @@
 
   <section class="cuadricula-container">
     <div class="datos_cuadricula-container">
-      <h3>Datos de Cuadricula X</h3>        
-      <label for="gridIdX">Grid ID</label>
-      <input type="text" name="gridIdX" id="gridIdX">
+      <h3>Datos de Cuadricula X</h3>  
 
-      <label for="espaciadoX">Espaciado X</label>
-      <input type="number" name="espaciadoX" id="espaciadoX">
+      <div class="container-datos">
+        <div>
+          <label for="gridIdX">Grid ID</label>
+          
+          <div class="cuadricula_id-x">
+            <input type="text" class="gridIdX" id="gridIdX">
+            <input type="text" class="gridIdX" id="gridIdX">
+            <input type="text" class="gridIdX" id="gridIdX">
+            <input type="text" class="gridIdX" id="gridIdX">
+            
+          </div>
+        </div>
 
+        <div>
+          <label for="espaciadoX">Espaciado X</label>
+          <div class="cuadricula_espaciado-x">
+            <input type="number" class="espaciadoX" id="espaciadoX">
+            <input type="number" class="espaciadoX" id="espaciadoX">
+            <input type="number" class="espaciadoX" id="espaciadoX">
+            <input type="number" class="espaciadoX" id="espaciadoX">
+    
+          </div>
+        </div>
+      </div>
     </div>
     <div>
       <button class="btn_plus_cuadricula-x">+</button>
@@ -63,11 +83,33 @@
 
     <div class="datos_cuadricula-container">
       <h3>Datos de Cuadricula Y</h3> 
-      <label for="gridIdY">Grid ID</label>     
-      <input type="text" name="gridIdY" id="gridIdY">
 
-      <label for="espaciadoY">Espaciado Y</label>
-      <input type="number" name="espaciadoY" id="espaciadoY">
+      <div class="container-cuadricula">
+        <div>
+          <label for="gridIdY">Grid ID</label>  
+  
+          <div class="cuadricula_id-y">
+            <input type="text" class="gridIdY" id="gridIdY">
+            <input type="text" class="gridIdY" id="gridIdY">
+            <input type="text" class="gridIdY" id="gridIdY">
+            <input type="text" class="gridIdY" id="gridIdY">
+    
+          </div>
+
+        </div>
+        
+        <div>
+          <label for="espaciadoY">Espaciado Y</label>
+          <div class="cuadricula_espaciado-y">
+            <input type="number" class="espaciadoY" id="espaciadoY">
+            <input type="number" class="espaciadoY" id="espaciadoY">
+            <input type="number" class="espaciadoY" id="espaciadoY">
+            <input type="number" class="espaciadoY" id="espaciadoY">
+    
+          </div>
+        </div>
+
+      </div>
   
     </div>
     <div>
@@ -82,7 +124,8 @@
   </section>
 
   <section class="grafico-container">
-    <div>grafico</div>
+    <!-- <div id="tester" style="width:600px;height:250px;"></div> -->
+    <div id='myDiv'><!-- Plotly chart will be drawn inside this DIV --></div>
   </section>
 </section>
 

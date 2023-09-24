@@ -11,6 +11,7 @@ body {
   height: 100vh;
   margin: 0;
   overflow: hidden;
+  background: linear-gradient(-170deg, #b4bbc0 0%, #9d9eaa 100%);;
 }
 
 /* general */
@@ -86,4 +87,17 @@ body {
   align-items: center;
 
   grid-area: aside;
+}
+
+.cuadricula_id-x, .cuadricula_espaciado-x, 
+.cuadricula_id-y, .cuadricula_espaciado-y{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.container-datos, .container-cuadricula {
+  display: flex;
+  align-items: center;
+  flex-direction: row;
 }
