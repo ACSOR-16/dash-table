@@ -9,7 +9,19 @@ app.layout = html.Div([
             html.Div([
 
             html.Div([
-                html.B("Análisis Sísmico Dinamico"),
+
+                html.Div([
+                    html.H2("Análisis Sísmico Dinamico", style={
+                        "fontSize": "20px",
+                        "fontWeight": "700",
+                        "letterSpacing": "0",
+                        "lineHeight": "1.5em",
+                        "paddingBottom": "15px",
+                        "position": "relative",
+                        "color": "#f0a500",
+                        "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+                    })
+                ]),
                 
                 dash_table.DataTable(
                     id='Análisis-sismico-dinamico',
@@ -27,16 +39,37 @@ app.layout = html.Div([
                     ],
                     editable=True,
                     row_deletable=False,
-                    # style={
-                    #     "marginTop": "20px"
-                    # },
+                    style_as_list_view=True,
+                    style_cell={
+                        'padding': '5px',
+                        "textAlign": "center"
+                        },
+                    style_header={
+                        'backgroundColor': '#9aa0a6',
+                        'fontWeight': 'bold',
+                        "color": "white",
+                        "textAlign": "center"
+                    },
+                   
                 )
             ], style={
                 "margin": "40px 0px 50px 50px"
             }),
             
             html.Div([
-                html.B("Dimensiones de Terreno"),
+
+                html.Div([
+                    html.H2("Dimensiones de Terreno", style={
+                        "fontSize": "20px",
+                        "fontWeight": "700",
+                        "letterSpacing": "0",
+                        "lineHeight": "1.5em",
+                        "paddingBottom": "15px",
+                        "position": "relative",
+                        "color": "#f0a500",
+                        "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+                    })
+                ]),
                 
                 dash_table.DataTable(
                     id='dimensiones-terreno',
@@ -52,6 +85,17 @@ app.layout = html.Div([
                     ],
                     editable=True,
                     row_deletable=False,
+                    style_as_list_view=True,
+                    style_cell={
+                        'padding': '5px',
+                        "textAlign": "center"
+                        },
+                    style_header={
+                        'backgroundColor': '#9aa0a6',
+                        'fontWeight': 'bold',
+                        "color": "white",
+                        "textAlign": "center"
+                    }
                     # style={
                     #     "marginTop": "20px"
                     # },
@@ -69,7 +113,19 @@ app.layout = html.Div([
         html.Div([
             
             html.Div([
-                html.B("Datos de cuadricula X"),
+                
+                html.Div([
+                    html.H2("Datos de cuadricula X", style={
+                        "fontSize": "20px",
+                        "fontWeight": "700",
+                        "letterSpacing": "0",
+                        "lineHeight": "1.5em",
+                        "paddingBottom": "15px",
+                        "position": "relative",
+                        "color": "#f0a500",
+                        "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+                    })
+                ]),
                 
                 dash_table.DataTable(
                     id='tabla-cuadricula-x',
@@ -86,18 +142,74 @@ app.layout = html.Div([
                     ],
                     editable=True,
                     row_deletable=True,
+                    style_as_list_view=True,
+                    style_cell={
+                        'padding': '5px',
+                        "textAlign": "center"
+                        },
+                    style_header={
+                        'backgroundColor': '#9aa0a6',
+                        'fontWeight': 'bold',
+                        "color": "white",
+                        "textAlign": "center"
+                    }
                     # style={
                     #     "marginTop": "20px"
                     # },
                 ),
 
-                html.Button('Agreg ar fila', id='editing-rows-button-X', n_clicks=0),
+                html.Button('Agreg ar fila', id='editing-rows-button-X', n_clicks=0,
+                            style={
+                            "alignItems": "center",
+                            "appearance": "none",
+                            "backgroundColor": "#fff",
+                            "borderRadius": "24px",
+                            "borderStyle": "none",
+                            "boxShadow": "rgba(0, 0, 0, .2) 0 3px 5px -1px,rgba(0, 0, 0, .14) 0 6px 10px 0,rgba(0, 0, 0, .12) 0 1px 18px 0",
+                            "boxSizing": "border-box",
+                            "color": "#3c4043",
+                            "cursor": "pointer",
+                            "display": "inline-flex",
+                            "fill": "currentcolor",
+                            "fontFamily": "Roboto,Arial,sans-serif",
+                            "fontSize": "14px",
+                            "fontWeight": "500",
+                            "height": "48px",
+                            "justifyContent": "center",
+                            "letterSpacing": ".25px",
+                            "lineHeight": "normal",
+                            "maxWidth": "100%",
+                            "overflow": "visible",
+                            "padding": "2px 24px",
+                            "position": "relative",
+                            "textAlign": "center",
+                            "textTransform": "none",
+                            "transition": "box-shadow 280ms cubic-bezier(.4, 0, .2, 1),opacity 15ms linear 30ms,transform 270ms cubic-bezie,(0, 0, .2, 1) 0ms",
+                            "userSelect": "none",
+                            "webkitUserSelect": "none",
+                            "touchAction": "manipulation",
+                            "width": "auto",
+                            "willChange": "transform,opacity",
+                            "zIndex": "0",
+                        }),
             ], style={
                 "margin": "40px 0px 50px 50px"
             }),
 
             html.Div([
-                html.B("Datos de cuadricula Y"),
+                
+                html.Div([
+                    html.H2("Datos de cuadricula Y", style={
+                        "fontSize": "20px",
+                        "fontWeight": "700",
+                        "letterSpacing": "0",
+                        "lineHeight": "1.5em",
+                        "paddingBottom": "15px",
+                        "position": "relative",
+                        "color": "#f0a500",
+                        "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+                    })
+                ]),
                 
                 dash_table.DataTable(
                     id='tabla-cuadricula-y',
@@ -114,12 +226,56 @@ app.layout = html.Div([
                     ],
                     editable=True,
                     row_deletable=True,
+                    style_as_list_view=True,
+                    style_cell={
+                        'padding': '5px',
+                        "textAlign": "center"
+                        },
+                    style_header={
+                        'backgroundColor': '#9aa0a6',
+                        'fontWeight': 'bold',
+                        "color": "white",
+                        "textAlign": "center"
+                    }
                     # style={
                     #     "marginTop": "20px"
                     # },
                 ),
                 
-                html.Button('Agregar fila', id='editing-rows-button-Y', n_clicks=0),
+                html.Button('Agregar fila', id='editing-rows-button-Y', n_clicks=0,
+                            style={
+                            "alignItems": "center",
+                            "appearance": "none",
+                            "backgroundColor": "#fff",
+                            "borderRadius": "24px",
+                            "borderStyle": "none",
+                            "boxShadow": "rgba(0, 0, 0, .2) 0 3px 5px -1px,rgba(0, 0, 0, .14) 0 6px 10px 0,rgba(0, 0, 0, .12) 0 1px 18px 0",
+                            "boxSizing": "border-box",
+                            "color": "#3c4043",
+                            "cursor": "pointer",
+                            "display": "inline-flex",
+                            "fill": "currentcolor",
+                            "fontFamily": "Roboto,Arial,sans-serif",
+                            "fontSize": "14px",
+                            "fontWeight": "500",
+                            "height": "48px",
+                            "justifyContent": "center",
+                            "letterSpacing": ".25px",
+                            "lineHeight": "normal",
+                            "maxWidth": "100%",
+                            "overflow": "visible",
+                            "padding": "2px 24px",
+                            "position": "relative",
+                            "textAlign": "center",
+                            "textTransform": "none",
+                            "transition": "box-shadow 280ms cubic-bezier(.4, 0, .2, 1),opacity 15ms linear 30ms,transform 270ms cubic-bezie,(0, 0, .2, 1) 0ms",
+                            "userSelect": "none",
+                            "webkitUserSelect": "none",
+                            "touchAction": "manipulation",
+                            "width": "auto",
+                            "willChange": "transform,opacity",
+                            "zIndex": "0",
+                        }),
             ], style={
                 "margin": "40px 0px 50px 50px"
             }),
@@ -134,7 +290,40 @@ app.layout = html.Div([
         html.Div(
             id='container-button-basic',
             children=[
-            html.Button('Grabar', id='grabar-datos', n_clicks=0),
+            html.Button('Grabar', id='grabar-datos', n_clicks=0, 
+                        style={
+                            "alignItems": "center",
+                            "appearance": "none",
+                            "backgroundColor": "#fff",
+                            "borderRadius": "24px",
+                            "borderStyle": "none",
+                            "boxShadow": "rgba(0, 0, 0, .2) 0 3px 5px -1px,rgba(0, 0, 0, .14) 0 6px 10px 0,rgba(0, 0, 0, .12) 0 1px 18px 0",
+                            "boxSizing": "border-box",
+                            "color": "#3c4043",
+                            "cursor": "pointer",
+                            "display": "inline-flex",
+                            "fill": "currentcolor",
+                            "fontFamily": "Roboto,Arial,sans-serif",
+                            "fontSize": "14px",
+                            "fontWeight": "500",
+                            "height": "48px",
+                            "justifyContent": "center",
+                            "letterSpacing": ".25px",
+                            "lineHeight": "normal",
+                            "maxWidth": "100%",
+                            "overflow": "visible",
+                            "padding": "2px 24px",
+                            "position": "relative",
+                            "textAlign": "center",
+                            "textTransform": "none",
+                            "transition": "box-shadow 280ms cubic-bezier(.4, 0, .2, 1),opacity 15ms linear 30ms,transform 270ms cubic-bezie,(0, 0, .2, 1) 0ms",
+                            "userSelect": "none",
+                            "webkitUserSelect": "none",
+                            "touchAction": "manipulation",
+                            "width": "auto",
+                            "willChange": "transform,opacity",
+                            "zIndex": "0",
+                        }),
                     
         ], style={
             "display": "flex",
@@ -143,7 +332,14 @@ app.layout = html.Div([
             "alignItems": "center",
             "marginTop": "50px",
         }),
-    ]),
+    ], style={
+        "maxWidth": "38em",
+        "padding": "1em 3em 2em 3em",
+        "margin": "2em 1em 1em 2em",
+        "backgroundColor": "#fff",
+        "borderRadius": "4.2px",
+        "boxShadow": "0px 3px 10px -2px rgba(0, 0, 0, 0.2)",
+    }),
 
     html.Div([
         html.H1(children="Grafico")
@@ -158,6 +354,7 @@ app.layout = html.Div([
     "display": "flex",
     "flexDirection": "row",
     "justifyContent": "space-between",
+    "backgroundColor": "#b9b9b9"
 })
 
 
