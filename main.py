@@ -1,5 +1,9 @@
-from dash import Dash, dash_table, dcc, html, Input, Output, State, callback
+import numpy as np
 import pandas as pd
+from openseespy.opensees import *
+import openseespy.postprocessing.ops_vis as opsv
+import matplotlib.pyplot as plt
+from dash import Dash, dash_table, dcc, html, Input, Output, State, callback
 
 app = Dash(__name__)
 
@@ -56,7 +60,7 @@ app.layout = html.Div([
                    
                 )
             ], style={
-                "margin": "40px 0px 50px 50px"
+                "margin": "10px 10px 20px"
             }),
             
             html.Div([
@@ -104,13 +108,14 @@ app.layout = html.Div([
                     # },
                 )
             ], style={
-                "margin": "40px 0px 50px 50px"
+                "margin": "10px 10px 20px"
             }),
         ], style={
             "display": "flex",
             "textAlign": "center",
             "justifyContent": "center",
             "alignItems": "center",
+            "justifyContent": "space-evenly"
         }),
 
         html.Div([
@@ -420,9 +425,9 @@ app.layout = html.Div([
             "marginTop": "50px",
         }),
     ], style={
-        "maxWidth": "38em",
+        "maxWidth": "100%",
         "padding": "1em 3em 2em 3em",
-        "margin": "2em 1em 1em 2em",
+        "margin": "1em  1em 2em",
         "backgroundColor": "#fff",
         "borderRadius": "4.2px",
         "boxShadow": "0px 3px 10px -2px rgba(0, 0, 0, 0.2)",
@@ -439,7 +444,7 @@ app.layout = html.Div([
 
 ], style={
     "display": "flex",
-    "flexDirection": "row",
+    "flexDirection": "column",
     "justifyContent": "space-between",
     "backgroundColor": "#b9b9b9"
 })
@@ -493,7 +498,95 @@ def save_data(n_clicks, data_x, data_y, data_z):
 
     return 'CLICK'
     
+# ---------- COLAB -------------
+# ---- SISTEMA DE UNIDADES ----
+# Unidades Base
+m = 1
+kg = 1
+s = 1
+# Otras Unidades
+cm = 0.01*m
+N = kg*m/s**2
+kN = 1000*N
+kgf = 9.80665*N
+tonf = 1000*kgf
+Pa = N/m**2
+# Constantes Físicas
+g = 9.80665*m/s**2
 
+# ---- PROPIEDADES DEL MATERIAL Y DE SECCIONES ----
+fc = 210*kg/cm**2
+E = 151*fc**0.5*kgf/cm**2
+G = 0.5*E/(1+0.2)
+# Viga
+b,h = 30*cm, 60*cm
+Av = b*h
+Izv = b*h**3/12
+Iyv = b**3*h/12
+aa, bb = max(b,h),min(b,h)
+β= 1/3-0.21*bb/aa*(1-(bb/aa)**4/12)
+Jxxv = β*bb**3*aa
+# Columna
+a = 60*cm
+Ac = a**2
+Izc = a**4/12
+Iyc = a**4/12
+β= 1/3-0.21*1.*(1-(1.)**4/12)
+Jxxc = β*a**4
+# Densidad del concreto
+ρ = 2400*kg/m**3
+
+# ---- CREACION DEL MODELO ----
+from numpy import zeros
+def GeoModel(df_x, df_y, df_z):
+    Lx, Ly, Lz = df_x["Espaciado"].sum(), df_y["Espaciado"].sum(), df_z["Espaciado"].sum()
+    NN = (df_x.shape[0])*(df_y.shape[0])*(df_z.shape[0])
+    Nodes = zeros((NN,5))
+    # Creando los nodos y asignando coordenadas
+    c = 0
+    for z in range(df_z.shape[0]):
+        for y in range(df_y.shape[0]):
+            for x in range(df_x.shape[0]):
+
+                Nodes[c] = [c, float(df_x["Espaciado"].iloc[:x].sum()), float(df_y["Espaciado"].iloc[:y].sum()), float(df_z["Espaciado"].iloc[:z].sum()), 0.5]
+                c += 1
+
+
+    Nodes[:(df_x.shape[0])*(df_y.shape[0]),4]=0
+    # print(Nodes)
+
+    NE = ((df_x.shape[0]-1)*(df_y.shape[0])+(df_y.shape[0]-1)*(df_x.shape[0])+(df_x.shape[0])*(df_y.shape[0]))*(df_z.shape[0]-1)
+    Elems = zeros((NE,4))
+    # # Creando las conexiones de los elementos verticales
+    c = 0
+    for i in range((df_z.shape[0]-1)):
+        for j in range(df_y.shape[0]):
+            for k in range(df_x.shape[0]):
+                Elems[c] = [c,c,c+(df_x.shape[0])*(df_y.shape[0]),1]
+                c = c + 1
+    # # Creando las conexiones de los elementos horizontales
+    m = (df_x.shape[0])*(df_y.shape[0])
+    for i in range(df_z.shape[0]-1):
+        for j in range(df_y.shape[0]):
+            for k in range(df_x.shape[0]-1):
+                Elems[c] = [c,m,m+1,2]
+                m = m + 1
+                c = c + 1
+            m = m + 1
+    # # Creando las conexiones de los elementos horizontales
+    n = 0
+    for i in range(df_z.shape[0]-1):
+        n = n + (df_x.shape[0])*(df_y.shape[0])
+        for j in range(df_x.shape[0]):
+            for k in range(df_y.shape[0]-1):
+                Elems[c] = [c,j+k*(df_x.shape[0])+n,j+(df_x.shape[0])+k*(df_x.shape[0])+n,2]
+                c = c + 1
+    # # Creando centro de diafragmas
+    Diap = zeros((df_z.shape[0]-1, 4))
+    for i in range(df_z.shape[0]-1):
+        Diap[i] = [i+1000, Lx/2.0, Ly/2.0, (df_z["Espaciado"].iloc[:i+1].sum())]
+
+    return Nodes, Elems, Diap
 
 
 if __name__ == '__main__':
