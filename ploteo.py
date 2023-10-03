@@ -130,7 +130,7 @@ def modelamiento_nodos(Nodes, Elems, Diap, df_x):
             for Ni in Nodes:
                 if Ni[3]==Nd[3]:
                     NodesDi.append(int(Ni[0]))
-            print(dirDia,int(Nd[0]),*NodesDi)
+            # print(dirDia,int(Nd[0]),*NodesDi)
             rigidDiaphragm(int(dirDia),int(Nd[0]),*NodesDi)
 
     print('HERE')
@@ -155,7 +155,7 @@ def modelamiento_nodos(Nodes, Elems, Diap, df_x):
     plt.figure() # dpi=600
     opsv.plot_model(fig_wi_he=(30., 40.),az_el=(-130,20), )
     plt.savefig('foo.jpg')
-    imagen_01 = plt.savefig('foo.jpg')
+    # imagen_01 = plt.savefig('foo.jpg')
 
     ele_shapes = {}
     for i in range(len(Elems)):
@@ -168,18 +168,18 @@ def modelamiento_nodos(Nodes, Elems, Diap, df_x):
     plt.figure()
     opsv.plot_extruded_shapes_3d(ele_shapes, fig_wi_he=(40.0, 32.0), az_el=(-130,20),fig_lbrt = (0, 0, 1, 1))
     plt.savefig("foo2.jpg")
-    imagen_02 = plt.savefig("foo2.jpg")
-    print("terminamos")
+    # imagen_02 = plt.savefig("foo2.jpg")
+    print("terminamos de ploterar")
 
-    return imagen_01 ,imagen_02
+    # return imagen_01 ,imagen_02
 
 
 
-dataframe_x = pd.DataFrame({'Grid':[1,2,3,4,5], 'Espaciado':[2,1,2,3,0]})
-dataframe_y = pd.DataFrame({'Grid':[1,2,3,4,5], 'Espaciado':[2,1,2,3,0]})
-dataframe_z = pd.DataFrame({'Grid':[1,2,3,4,5], 'Espaciado':[2,1,2,3,0]})
+# dataframe_x = pd.DataFrame({'Grid':[1,2,3,4,5], 'Espaciado':[2,1,2,3,0]})
+# dataframe_y = pd.DataFrame({'Grid':[1,2,3,4,5], 'Espaciado':[2,1,2,3,0]})
+# dataframe_z = pd.DataFrame({'Grid':[1,2,3,4,5], 'Espaciado':[2,1,2,3,0]})
 
-# Nodos del Modelo
-Nodes, Elems, Diap = GeoModel(dataframe_x, dataframe_y, dataframe_z)
+# # Nodos del Modelo
+# Nodes, Elems, Diap = GeoModel(dataframe_x, dataframe_y, dataframe_z)
 
-modelamiento_nodos(Nodes, Elems, Diap, dataframe_x)
+# modelamiento_nodos(Nodes, Elems, Diap, dataframe_x)

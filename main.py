@@ -485,8 +485,8 @@ def add_row(n_clicks, rows, columns):
     return rows
 
 @callback(
-    Output('imagen_01', 'children'),
-    Output('imagen_02', 'children'),
+    # Output('imagen_01', 'children'),
+    # Output('imagen_02', 'children'),
     # Output('container-button-basic', 'children'),
     Input('grabar-datos', 'n_clicks'),
     State('tabla-cuadricula-x', 'data'),
@@ -503,11 +503,11 @@ def save_data(n_clicks, data_x, data_y, data_z):
     df_z = dataframe_z 
 
     Nodes, Elems, Diap = GeoModel(df_x, df_y, df_z)
-
-    imagen_01, imgane_02 = modelamiento_nodos(Nodes, Elems, Diap, df_x)
+    print(Nodes)
+    modelamiento_nodos(Nodes, Elems, Diap, df_x)
 
     print("finalizado")
-    return imagen_01, imgane_02
+    # return imagen_01, imgane_02
 
 
 if __name__ == '__main__':
