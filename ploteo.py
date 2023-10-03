@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from openseespy.opensees import wipe, model, node, fix, fixZ, geomTransf, element, rigidDiaphragm
-import openseespy.postprocessing.ops_vis as opsv
+import opsvis as opsv
 import matplotlib.pyplot as plt
 from dash import Dash, dash_table, dcc, html, Input, Output, State, callback
 from numpy import zeros
@@ -45,7 +45,9 @@ Jxxc = β*a**4
 
 # ---- CREACION DEL MODELO ----
 def GeoModel(df_x, df_y, df_z):
-    Lx, Ly, Lz = df_x["Espaciado"].sum(), df_y["Espaciado"].sum(), df_z["Espaciado"].sum()
+    Lx = df_x["Espaciado"].sum()
+    Ly = df_y["Espaciado"].sum()
+    Lz = df_z["Espaciado"].sum()
     NN = (df_x.shape[0])*(df_y.shape[0])*(df_z.shape[0])
     Nodes = zeros((NN,5))
 
@@ -101,6 +103,7 @@ def GeoModel(df_x, df_y, df_z):
                 c = c + 1
     # # Creando centro de diafragmas
     Diap = zeros((len_z-1, 4))
+    print(df_z)
     for i in range(len_z-1):
         Diap[i] = [i+1000, Lx/2.0, Ly/2.0, (df_z["Espaciado"].iloc[:i+1].sum())]
 
@@ -110,11 +113,10 @@ def GeoModel(df_x, df_y, df_z):
 
 
 
-def modelamiento_nodos(Nodes, Elems, Diap, df_x):
-    # Generamos la malla
-    RigidDiaphragm = 'ON'
+def ModelamientoNodos(Nodes, Elems, Diap, df_x):
     wipe()
     model('basic', '-ndm', 3, '-ndf', 6)
+    RigidDiaphragm = 'ON'
     #  ----- CREANDO NODOS DEL MODELO ----
     for Ni in Nodes:
     # print(Ni)
@@ -130,10 +132,9 @@ def modelamiento_nodos(Nodes, Elems, Diap, df_x):
             for Ni in Nodes:
                 if Ni[3]==Nd[3]:
                     NodesDi.append(int(Ni[0]))
-            print(dirDia,int(Nd[0]),*NodesDi)
+            #print(dirDia,int(Nd[0]),*NodesDi)
             rigidDiaphragm(int(dirDia),int(Nd[0]),*NodesDi)
 
-    print('HERE')
     # ----- ASIGNAMOS RESTRICCIONES EN LOS NODOS ----
     # Restricciones
     fixZ(0.0, *[1,1,1,1,1,1], '-tol', 1e-6)
@@ -154,8 +155,7 @@ def modelamiento_nodos(Nodes, Elems, Diap, df_x):
     # ------ PLOTEO DEL MODELO ----
     plt.figure() # dpi=600
     opsv.plot_model(fig_wi_he=(30., 40.),az_el=(-130,20), )
-    plt.savefig('foo.jpg')
-    imagen_01 = plt.savefig('foo.jpg')
+    plt.savefig('plots/modelo_grillas.jpg')
 
     ele_shapes = {}
     for i in range(len(Elems)):
@@ -165,16 +165,14 @@ def modelamiento_nodos(Nodes, Elems, Diap, df_x):
             ele_shapes[i] = ['rect', [b, h]]
         else:
             print('Error. No es ni elemento viga ni columna.')
+    
     plt.figure()
     opsv.plot_extruded_shapes_3d(ele_shapes, fig_wi_he=(40.0, 32.0), az_el=(-130,20),fig_lbrt = (0, 0, 1, 1))
-    plt.savefig("foo2.jpg")
-    imagen_02 = plt.savefig("foo2.jpg")
-    print("terminamos")
-
-    return imagen_01 ,imagen_02
+    plt.savefig("plots/modelo_volumen.jpg")
 
 
 
+""""
 dataframe_x = pd.DataFrame({'Grid':[1,2,3,4,5], 'Espaciado':[2,1,2,3,0]})
 dataframe_y = pd.DataFrame({'Grid':[1,2,3,4,5], 'Espaciado':[2,1,2,3,0]})
 dataframe_z = pd.DataFrame({'Grid':[1,2,3,4,5], 'Espaciado':[2,1,2,3,0]})
@@ -183,3 +181,5 @@ dataframe_z = pd.DataFrame({'Grid':[1,2,3,4,5], 'Espaciado':[2,1,2,3,0]})
 Nodes, Elems, Diap = GeoModel(dataframe_x, dataframe_y, dataframe_z)
 
 modelamiento_nodos(Nodes, Elems, Diap, dataframe_x)
+
+"""

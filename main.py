@@ -1,11 +1,13 @@
 import numpy as np
 import pandas as pd
+import plotly.express as px
+from PIL import Image
 from openseespy.opensees import wipe, model, node, fix, fixZ, geomTransf, element, rigidDiaphragm
-import openseespy.postprocessing.ops_vis as opsv
+import opsvis as opsv
 import matplotlib.pyplot as plt
 from dash import Dash, dash_table, dcc, html, Input, Output, State, callback
 from numpy import zeros
-from ploteo import GeoModel, modelamiento_nodos
+from ploteo import GeoModel, ModelamientoNodos
 
 app = Dash(__name__)
 
@@ -436,9 +438,8 @@ app.layout = html.Div([
     }),
 
     html.Div([
-        html.H1(children="Grafico"),
-        html.Div(id="imagen_01"),
-        html.Div(id="imagen_02"),
+        html.Div(dcc.Graph(id='plot-modelo-grillas')),
+        html.Div(dcc.Graph(id='plot-modelo-volumen')),
     ], style={
         "display": "flex",
         "textAlign": "center",
@@ -446,11 +447,13 @@ app.layout = html.Div([
         "alignItems": "center",
     }),
 
+    
+
 ], style={
     "display": "flex",
     "flexDirection": "column",
     "justifyContent": "space-between",
-    "backgroundColor": "#b9b9b9"
+    "backgroundColor": "#F2F2F2"
 })
 
 
@@ -485,29 +488,38 @@ def add_row(n_clicks, rows, columns):
     return rows
 
 @callback(
-    Output('imagen_01', 'children'),
-    Output('imagen_02', 'children'),
-    # Output('container-button-basic', 'children'),
+    Output('plot-modelo-grillas', 'figure'),
+    Output('plot-modelo-volumen', 'figure'),
     Input('grabar-datos', 'n_clicks'),
     State('tabla-cuadricula-x', 'data'),
     State('tabla-cuadricula-y', 'data'),
     State('tabla-cuadricula-z', 'data'),
     prevent_initial_call=True)
 def save_data(n_clicks, data_x, data_y, data_z):
-    dataframe_x = pd.DataFrame(data_x)
-    dataframe_y = pd.DataFrame(data_y)
-    dataframe_z = pd.DataFrame(data_z)
+    df_x = pd.DataFrame(data_x).astype(float)
+    df_y = pd.DataFrame(data_y).astype(float)
+    df_z = pd.DataFrame(data_z).astype(float)
 
-    df_x = dataframe_x  
-    df_y = dataframe_y 
-    df_z = dataframe_z 
-
+    # Generamos la malla
     Nodes, Elems, Diap = GeoModel(df_x, df_y, df_z)
 
-    imagen_01, imgane_02 = modelamiento_nodos(Nodes, Elems, Diap, df_x)
+    # Creacion de nodos y volumen
+    ModelamientoNodos(Nodes, Elems, Diap, df_x)
 
-    print("finalizado")
-    return imagen_01, imgane_02
+    # Plot grillas y modelo volumen
+    img_modelo_grillas = Image.open('plots/modelo_grillas.jpg')
+    fig_grillas = px.imshow(img = img_modelo_grillas)
+    fig_grillas.update_layout(coloraxis_showscale=False, width=980, height=1089)
+    fig_grillas.update_xaxes(showticklabels=False)
+    fig_grillas.update_yaxes(showticklabels=False)
+
+    img_modelo_volumen = Image.open('plots/modelo_volumen.jpg')
+    fig_volumen = px.imshow(img = img_modelo_volumen)
+    fig_volumen.update_layout(coloraxis_showscale=False, width=980, height=1089)
+    fig_volumen.update_xaxes(showticklabels=False)
+    fig_volumen.update_yaxes(showticklabels=False)
+    
+    return fig_grillas, fig_volumen
 
 
 if __name__ == '__main__':
