@@ -5,6 +5,7 @@ import openseespy.postprocessing.ops_vis as opsv
 import matplotlib.pyplot as plt
 from dash import Dash, dash_table, dcc, html, Input, Output, State, callback
 from numpy import zeros
+from ploteo import GeoModel, modelamiento_nodos
 
 app = Dash(__name__)
 
@@ -436,8 +437,8 @@ app.layout = html.Div([
 
     html.Div([
         html.H1(children="Grafico"),
-        html.Div([html.Img(src="./foo.jpg")]),
-        html.Div([html.Img(src="./foo2.jpg")]),
+        html.Div(id="imagen_01"),
+        html.Div(id="imagen_02"),
     ], style={
         "display": "flex",
         "textAlign": "center",
@@ -484,7 +485,9 @@ def add_row(n_clicks, rows, columns):
     return rows
 
 @callback(
-    Output('container-button-basic', 'children'),
+    Output('imagen_01', 'children'),
+    Output('imagen_02', 'children'),
+    # Output('container-button-basic', 'children'),
     Input('grabar-datos', 'n_clicks'),
     State('tabla-cuadricula-x', 'data'),
     State('tabla-cuadricula-y', 'data'),
@@ -495,10 +498,16 @@ def save_data(n_clicks, data_x, data_y, data_z):
     dataframe_y = pd.DataFrame(data_y)
     dataframe_z = pd.DataFrame(data_z)
 
-    df_x = dataframe_x 
+    df_x = dataframe_x  
     df_y = dataframe_y 
     df_z = dataframe_z 
 
+    Nodes, Elems, Diap = GeoModel(df_x, df_y, df_z)
+
+    imagen_01, imgane_02 = modelamiento_nodos(Nodes, Elems, Diap, df_x)
+
+    print("finalizado")
+    return imagen_01, imgane_02
 
 
 if __name__ == '__main__':
