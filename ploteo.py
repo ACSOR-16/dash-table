@@ -48,51 +48,64 @@ def GeoModel(df_x, df_y, df_z):
     Lx, Ly, Lz = df_x["Espaciado"].sum(), df_y["Espaciado"].sum(), df_z["Espaciado"].sum()
     NN = (df_x.shape[0])*(df_y.shape[0])*(df_z.shape[0])
     Nodes = zeros((NN,5))
-    # Creando los nodos y asignando coordenadas
-    c = 0
-    for z in range(df_z.shape[0]):
-        for y in range(df_y.shape[0]):
-            for x in range(df_x.shape[0]):
 
-                Nodes[c] = [c, float(df_x["Espaciado"].iloc[:x].sum()), float(df_y["Espaciado"].iloc[:y].sum()), float(df_z["Espaciado"].iloc[:z].sum()), 0.5]
+    len_x = df_x.shape[0]
+    len_y = df_y.shape[0]
+    len_z = df_z.shape[0]    
+    # Creando los nodos y asignando coordenadas 
+    c = 0
+    for z in range(len_z):
+        for y in range(len_y):
+            for x in range(len_x):
+                if (x == 0 or x == len_x - 1) and (y == 0 or y == len_y - 1):
+                    Nodes[c] = [c, df_x["Espaciado"].iloc[:x].sum(), df_y["Espaciado"].iloc[:y].sum(), df_z["Espaciado"].iloc[:z].sum(), 0.25]
+                elif (y == 0 or y == len_x - 1) and (x != 0 or x != len_x - 1): 
+                    Nodes[c] = [c, df_x["Espaciado"].iloc[:x].sum(), df_y["Espaciado"].iloc[:y].sum(), df_z["Espaciado"].iloc[:z].sum(), 0.5]
+                elif (x == 0 or x == len_x - 1) and (y != 0 or y != len_y - 1):
+                    Nodes[c] = [c, df_x["Espaciado"].iloc[:x].sum(), df_y["Espaciado"].iloc[:y].sum(), df_z["Espaciado"].iloc[:z].sum(), 0.5]
+                else:
+                    Nodes[c] = [c, df_x["Espaciado"].iloc[:x].sum(), df_y["Espaciado"].iloc[:y].sum(), df_z["Espaciado"].iloc[:z].sum(), 1]
+            
                 c += 1
 
 
-    Nodes[:(df_x.shape[0])*(df_y.shape[0]),4]=0
+    # primer piso carga en nodos es = Cero
+    Nodes[:(len_x)*(len_y),4]=0
     # print(Nodes)
 
-    NE = ((df_x.shape[0]-1)*(df_y.shape[0])+(df_y.shape[0]-1)*(df_x.shape[0])+(df_x.shape[0])*(df_y.shape[0]))*(df_z.shape[0]-1)
+    NE = ((len_x-1)*(len_y)+(len_y-1)*(len_x)+(len_x)*(len_y))*(len_z-1)
     Elems = zeros((NE,4))
     # # Creando las conexiones de los elementos verticales
     c = 0
-    for i in range((df_z.shape[0]-1)):
-        for j in range(df_y.shape[0]):
-            for k in range(df_x.shape[0]):
-                Elems[c] = [c,c,c+(df_x.shape[0])*(df_y.shape[0]),1]
+    for i in range((len_z-1)):
+        for j in range(len_y):
+            for k in range(len_x):
+                Elems[c] = [c,c,c+(len_x)*(len_y),1]
                 c = c + 1
     # # Creando las conexiones de los elementos horizontales
-    m = (df_x.shape[0])*(df_y.shape[0])
-    for i in range(df_z.shape[0]-1):
-        for j in range(df_y.shape[0]):
-            for k in range(df_x.shape[0]-1):
+    m = (len_x)*(len_y)
+    for i in range(len_z-1):
+        for j in range(len_y):
+            for k in range(len_x-1):
                 Elems[c] = [c,m,m+1,2]
                 m = m + 1
                 c = c + 1
             m = m + 1
     # # Creando las conexiones de los elementos horizontales
     n = 0
-    for i in range(df_z.shape[0]-1):
-        n = n + (df_x.shape[0])*(df_y.shape[0])
-        for j in range(df_x.shape[0]):
-            for k in range(df_y.shape[0]-1):
-                Elems[c] = [c,j+k*(df_x.shape[0])+n,j+(df_x.shape[0])+k*(df_x.shape[0])+n,2]
+    for i in range(len_z-1):
+        n = n + (len_x)*(len_y)
+        for j in range(len_x):
+            for k in range(len_y-1):
+                Elems[c] = [c,j+k*(len_x)+n,j+(len_x)+k*(len_x)+n,2]
                 c = c + 1
     # # Creando centro de diafragmas
-    Diap = zeros((df_z.shape[0]-1, 4))
-    for i in range(df_z.shape[0]-1):
+    Diap = zeros((len_z-1, 4))
+    for i in range(len_z-1):
         Diap[i] = [i+1000, Lx/2.0, Ly/2.0, (df_z["Espaciado"].iloc[:i+1].sum())]
 
     print("S")
+    print(Nodes)
     return Nodes, Elems, Diap
 
 
@@ -135,7 +148,7 @@ def modelamiento_nodos(Nodes, Elems, Diap, df_x):
         if int(Ele[3]) == 1:# 1 Columna
             element('elasticBeamColumn', int(Ele[0]), int(Ele[1]), int(Ele[2]), Ac, E, G, Jxxc, Iyc, Izc, int(Ele[3]),'-mass', ρ*Ac)
         else: # 2 Viga
-            # for x in range(df_x.shape[0]+1):
+            # for x in range(len_x+1):
             element('elasticBeamColumn', int(Ele[0]), int(Ele[1]), int(Ele[2]), Av, E, G, Jxxv, Iyv, Izv, int(Ele[3]),'-mass', ρ*Av*((df_x["Espaciado"].iloc[0:-1].mean())-a)/(df_x["Espaciado"].iloc[0:-1].mean()))
 
     # ------ PLOTEO DEL MODELO ----
@@ -162,9 +175,9 @@ def modelamiento_nodos(Nodes, Elems, Diap, df_x):
 
 
 
-dataframe_x = pd.DataFrame({'Grid':[1,2,3,4], 'Espaciado':[1.5,1.5,2,0]})
-dataframe_y = pd.DataFrame({'Grid':[1,2,3,4], 'Espaciado':[2,2,3,0]})
-dataframe_z = pd.DataFrame({'Grid':[1,2,3,4], 'Espaciado':[2,1,1,0]})
+dataframe_x = pd.DataFrame({'Grid':[1,2,3,4,5], 'Espaciado':[2,1,2,3,0]})
+dataframe_y = pd.DataFrame({'Grid':[1,2,3,4,5], 'Espaciado':[2,1,2,3,0]})
+dataframe_z = pd.DataFrame({'Grid':[1,2,3,4,5], 'Espaciado':[2,1,2,3,0]})
 
 # Nodos del Modelo
 Nodes, Elems, Diap = GeoModel(dataframe_x, dataframe_y, dataframe_z)
