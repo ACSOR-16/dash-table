@@ -7,26 +7,42 @@ import opsvis as opsv
 import matplotlib.pyplot as plt
 from dash import Dash, dash_table, dcc, html, Input, Output, State, callback
 from numpy import zeros
+import warnings
+warnings.filterwarnings("ignore")
 from ploteo import GeoModel, ModelamientoNodos
 
+##
 app = Dash(__name__)
-
+#app.css.append_css({'/bWLwgP.css'})
+# Análisis Sísmico Estático y Dinámico Modal Espectral
 app.layout = html.Div([
-    
+    html.H2("Análisis Sísmico Estático y Dinámico Modal Espectral", style={
+                        "margin": "8px",
+                        "display": "flex",
+                        "justifyContent": "center",
+                        "fontSize": "30px",
+                        "fontWeight": "700",
+                        "letterSpacing": "0",
+                        "lineHeight": "1.5em",
+                        "paddingBottom": "0px",
+                        "marginBottom": "0px",
+                        "position": "relative",
+                        "color": "#15294b",
+                        "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+                    }),
     html.Div([
             html.Div([
-
             html.Div([
 
                 html.Div([
-                    html.H2("Análisis Sísmico Dinamico", style={
+                    html.H2("Parametros Sísmicos", style={
                         "fontSize": "20px",
                         "fontWeight": "700",
                         "letterSpacing": "0",
                         "lineHeight": "1.5em",
                         "paddingBottom": "15px",
                         "position": "relative",
-                        "color": "#f0a500",
+                        "color": "#15294b",
                         "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
                     })
                 ]),
@@ -40,7 +56,6 @@ app.layout = html.Div([
                         'renamable': False
                     } for i in ['Factores', 'Valores']],
                     data=[
-                        {'Factores':"f'c Concreto", 'Valores':210},
                         {'Factores':'Factor de Zona', 'Valores':1},
                         {'Factores':'Factor de Uso', 'Valores':0.45},
                         {'Factores':'Factor de suelo', 'Valores':1},
@@ -77,7 +92,7 @@ app.layout = html.Div([
                         "lineHeight": "1.5em",
                         "paddingBottom": "15px",
                         "position": "relative",
-                        "color": "#f0a500",
+                        "color": "#15294b",
                         "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
                     })
                 ]),
@@ -134,7 +149,7 @@ app.layout = html.Div([
                         "lineHeight": "1.5em",
                         "paddingBottom": "15px",
                         "position": "relative",
-                        "color": "#f0a500",
+                        "color": "#15294b",
                         "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
                     })
                 ]),
@@ -170,7 +185,7 @@ app.layout = html.Div([
                     # },
                 ),
 
-                html.Button('Agreg ar fila', id='editing-rows-button-X', n_clicks=0,
+                html.Button('Agregar fila', id='editing-rows-button-X', n_clicks=0,
                             style={
                             "alignItems": "center",
                             "appearance": "none",
@@ -218,7 +233,7 @@ app.layout = html.Div([
                         "lineHeight": "1.5em",
                         "paddingBottom": "15px",
                         "position": "relative",
-                        "color": "#f0a500",
+                        "color": "#15294b",
                         "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
                     })
                 ]),
@@ -295,14 +310,14 @@ app.layout = html.Div([
             html.Div([
                 
                 html.Div([
-                    html.H2("Datos de cuadricula Z", style={
+                    html.H2("Datos de  elevación", style={
                         "fontSize": "20px",
                         "fontWeight": "700",
                         "letterSpacing": "0",
                         "lineHeight": "1.5em",
                         "paddingBottom": "15px",
                         "position": "relative",
-                        "color": "#f0a500",
+                        "color": "#15294b",
                         "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
                     })
                 ]),
@@ -314,9 +329,9 @@ app.layout = html.Div([
                         'id': i,
                         'deletable': True,
                         'renamable': True
-                    } for i in ['Grid', 'Espaciado']],
+                    } for i in ['Nivel', 'Altura']],
                     data=[
-                        {i: 0 for i in ['Grid', 'Espaciado']}
+                        {i: 0 for i in ['Nivel', 'Altura']}
                         for j in range(3)
 
                     ],
@@ -386,7 +401,7 @@ app.layout = html.Div([
         html.Div(
             id='container-button-basic',
             children=[
-            html.Button('Grabar', id='grabar-datos', n_clicks=0, 
+            html.Button('Generar Resultados', id='grabar-datos', n_clicks=0, 
                         style={
                             "alignItems": "center",
                             "appearance": "none",
@@ -501,10 +516,12 @@ def save_data(n_clicks, data_x, data_y, data_z):
     df_z = pd.DataFrame(data_z).astype(float)
 
     # Generamos la malla
-    Nodes, Elems, Diap = GeoModel(df_x, df_y, df_z)
-
+    Nodes, Elems, Diap, start_viga_x, end_viga_x = GeoModel(df_x, df_y, df_z)
+    #print(Nodes)
+    #print(Elems)
+    #print(Diap)
     # Creacion de nodos y volumen
-    ModelamientoNodos(Nodes, Elems, Diap, df_x)
+    ModelamientoNodos(Nodes, Elems, Diap, df_x, start_viga_x, end_viga_x)
 
     # Plot grillas y modelo volumen
     img_modelo_grillas = Image.open('plots/modelo_grillas.jpg')

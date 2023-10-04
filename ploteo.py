@@ -5,6 +5,7 @@ import opsvis as opsv
 import matplotlib.pyplot as plt
 from dash import Dash, dash_table, dcc, html, Input, Output, State, callback
 from numpy import zeros
+from PIL import Image, ImageChops
 
 # ---- SISTEMA DE UNIDADES ----
 # Unidades Base
@@ -43,6 +44,14 @@ Jxxc = β*a**4
 # Densidad del concreto
 ρ = 2400*kg/m**3
 
+def trim(im):
+    bg = Image.new(im.mode, im.size, im.getpixel((0,0)))
+    diff = ImageChops.difference(im, bg)
+    diff = ImageChops.add(diff, diff, 2.0, -100)
+    bbox = diff.getbbox()
+    if bbox:
+        return im.crop(bbox)
+
 # ---- CREACION DEL MODELO ----
 def GeoModel(df_x, df_y, df_z):
     Lx = df_x["Espaciado"].sum()
@@ -76,44 +85,47 @@ def GeoModel(df_x, df_y, df_z):
     # print(Nodes)
 
     NE = ((len_x-1)*(len_y)+(len_y-1)*(len_x)+(len_x)*(len_y))*(len_z-1)
-    Elems = zeros((NE,4))
+    Elems = zeros((NE,5))
     # # Creando las conexiones de los elementos verticales
     c = 0
     for i in range((len_z-1)):
         for j in range(len_y):
             for k in range(len_x):
-                Elems[c] = [c,c,c+(len_x)*(len_y),1]
+                Elems[c] = [c,c,c+(len_x)*(len_y),1, 0]
                 c = c + 1
-    # # Creando las conexiones de los elementos horizontales
+    # # Creando las conexiones de los elementos horizontales en X
     m = (len_x)*(len_y)
     for i in range(len_z-1):
         for j in range(len_y):
             for k in range(len_x-1):
-                Elems[c] = [c,m,m+1,2]
+                Elems[c] = [c,m,m+1,2, df_x["Espaciado"].iloc[k]]
                 m = m + 1
                 c = c + 1
             m = m + 1
-    # # Creando las conexiones de los elementos horizontales
+
+    # # Creando las conexiones de los elementos horizontales en Y
     n = 0
     for i in range(len_z-1):
         n = n + (len_x)*(len_y)
         for j in range(len_x):
             for k in range(len_y-1):
-                Elems[c] = [c,j+k*(len_x)+n,j+(len_x)+k*(len_x)+n,2]
+                Elems[c] = [c,j+k*(len_x)+n,j+(len_x)+k*(len_x)+n,2, df_y["Espaciado"].iloc[k]]
                 c = c + 1
+    
     # # Creando centro de diafragmas
     Diap = zeros((len_z-1, 4))
-    print(df_z)
+   
     for i in range(len_z-1):
         Diap[i] = [i+1000, Lx/2.0, Ly/2.0, (df_z["Espaciado"].iloc[:i+1].sum())]
 
-    print("S")
-    print(Nodes)
-    return Nodes, Elems, Diap
+    start_viga_x = (len_z-1)* len_y*(len_x)
+    end_viga_x = ((len_z-1)* len_y*(len_x-1))-1+start_viga_x 
+ 
+    return Nodes, Elems, Diap, start_viga_x, end_viga_x
 
 
 
-def ModelamientoNodos(Nodes, Elems, Diap, df_x):
+def ModelamientoNodos(Nodes, Elems, Diap, df_x, start_viga_x, end_viga_x):
     wipe()
     model('basic', '-ndm', 3, '-ndf', 6)
     RigidDiaphragm = 'ON'
@@ -145,17 +157,20 @@ def ModelamientoNodos(Nodes, Elems, Diap, df_x):
 
     # ---- ESTABLECEMOS LOS ELEMENTOS CON SUS PROPIEDADES RESPECTIVAS
     # Creamos los elementos
+    #print(start_viga_x, end_viga_x)
     for Ele in Elems:
         if int(Ele[3]) == 1:# 1 Columna
             element('elasticBeamColumn', int(Ele[0]), int(Ele[1]), int(Ele[2]), Ac, E, G, Jxxc, Iyc, Izc, int(Ele[3]),'-mass', ρ*Ac)
         else: # 2 Viga
-            # for x in range(len_x+1):
-            element('elasticBeamColumn', int(Ele[0]), int(Ele[1]), int(Ele[2]), Av, E, G, Jxxv, Iyv, Izv, int(Ele[3]),'-mass', ρ*Av*((df_x["Espaciado"].iloc[0:-1].mean())-a)/(df_x["Espaciado"].iloc[0:-1].mean()))
+            element('elasticBeamColumn', int(Ele[0]), int(Ele[1]), int(Ele[2]), Av, E, G, Jxxv, Iyv, Izv, int(Ele[3]),'-mass', ρ*Av*((Ele[4]-a)/Ele[4])) # ρ*Av*((dx-a)/dx)  #ρ*Av*(dy-a)/dy) # considerarr cuanndo la viga esta en x o y
 
     # ------ PLOTEO DEL MODELO ----
     plt.figure() # dpi=600
     opsv.plot_model(fig_wi_he=(30., 40.),az_el=(-130,20), )
     plt.savefig('plots/modelo_grillas.jpg')
+    im = Image.open('plots/modelo_grillas.jpg')
+    im = trim(im)
+    im.save('plots/modelo_grillas.jpg')
 
     ele_shapes = {}
     for i in range(len(Elems)):
@@ -169,6 +184,10 @@ def ModelamientoNodos(Nodes, Elems, Diap, df_x):
     plt.figure()
     opsv.plot_extruded_shapes_3d(ele_shapes, fig_wi_he=(40.0, 32.0), az_el=(-130,20),fig_lbrt = (0, 0, 1, 1))
     plt.savefig("plots/modelo_volumen.jpg")
+    im = Image.open("plots/modelo_volumen.jpg")
+    im = trim(im)
+    im.save("plots/modelo_volumen.jpg")
+    
 
 
 
