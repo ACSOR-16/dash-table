@@ -514,6 +514,7 @@ def save_data(n_clicks, data_x, data_y, data_z):
     df_x = pd.DataFrame(data_x).astype(float)
     df_y = pd.DataFrame(data_y).astype(float)
     df_z = pd.DataFrame(data_z).astype(float)
+    df_z.columns = ["Grid", "Espaciado"]
 
     # Generamos la malla
     Nodes, Elems, Diap, start_viga_x, end_viga_x = GeoModel(df_x, df_y, df_z)
