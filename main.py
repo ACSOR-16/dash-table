@@ -2,14 +2,17 @@ import numpy as np
 import pandas as pd
 import plotly.express as px
 from PIL import Image
-from openseespy.opensees import wipe, model, node, fix, fixZ, geomTransf, element, rigidDiaphragm
-import opsvis as opsv
+# import openseespy.opensees as ope
+# import openseespyvis.Get_Rendering as opsplt
+# import opsvis as opsv
+import openseespy.postprocessing.ops_vis as opsv
+import openseespy.postprocessing.Get_Rendering as opsplt
 import matplotlib.pyplot as plt
 from dash import Dash, dash_table, dcc, html, Input, Output, State, callback
 from numpy import zeros
 import warnings
 warnings.filterwarnings("ignore")
-from ploteo import GeoModel, ModelamientoNodos
+import functions as func 
 
 ##
 app = Dash(__name__)
@@ -513,337 +516,337 @@ app.layout = html.Div(children=[
             }),
     ]),
 
-    # ------ ASIGNACION DE MASAS Y MODOS DE VIBRACION -----
-    html.Div(children=[
-        html.H2("ASIGNACION DE MASAS Y MODOS DE VIBRACION", style={
-            "fontSize": "20px",
-            "fontWeight": "700",
-            "letterSpacing": "0",
-            "lineHeight": "1.5em",
-            "position": "relative",
-            "color": "#15294b",
-            "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif",
-            "textAlign": "center",
-            "marginBottom": "0px",
-            "paddingBottom": "0px"
-        }),
+    # # ------ ASIGNACION DE MASAS Y MODOS DE VIBRACION -----
+    # html.Div(children=[
+    #     html.H2("ASIGNACION DE MASAS Y MODOS DE VIBRACION", style={
+    #         "fontSize": "20px",
+    #         "fontWeight": "700",
+    #         "letterSpacing": "0",
+    #         "lineHeight": "1.5em",
+    #         "position": "relative",
+    #         "color": "#15294b",
+    #         "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif",
+    #         "textAlign": "center",
+    #         "marginBottom": "0px",
+    #         "paddingBottom": "0px"
+    #     }),
 
-        html.Div(children=[
+    #     html.Div(children=[
 
-            html.Div( children=[
-                html.H2("Grafico Nro", style={
-                    "fontSize": "20px",
-                    "fontWeight": "700",
-                    "letterSpacing": "0",
-                    "lineHeight": "1.5em",
-                    "position": "relative",
-                    "color": "#15294b",
-                    "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
-                }),
-                dcc.Graph(id='plot-modelo-grillas')
-            ]),
-            html.Div( children=[
-                html.H2("Grafico Nro", style={
-                    "fontSize": "20px",
-                    "fontWeight": "700",
-                    "letterSpacing": "0",
-                    "lineHeight": "1.5em",
-                    "position": "relative",
-                    "color": "#15294b",
-                    "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
-                }),
-                dcc.Graph(id='plot-modelo-volumen')
-            ]),
-            html.Div( children=[
-                html.H2("Grafico Nro", style={
-                    "fontSize": "20px",
-                    "fontWeight": "700",
-                    "letterSpacing": "0",
-                    "lineHeight": "1.5em",
-                    "position": "relative",
-                    "color": "#15294b",
-                    "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
-                }),
-                dcc.Graph(id='plot-modelo-volumen')
-            ]),
+    #         html.Div( children=[
+    #             html.H2("Grafico Nro", style={
+    #                 "fontSize": "20px",
+    #                 "fontWeight": "700",
+    #                 "letterSpacing": "0",
+    #                 "lineHeight": "1.5em",
+    #                 "position": "relative",
+    #                 "color": "#15294b",
+    #                 "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+    #             }),
+    #             dcc.Graph(id='plot-modelo-grillas')
+    #         ]),
+    #         html.Div( children=[
+    #             html.H2("Grafico Nro", style={
+    #                 "fontSize": "20px",
+    #                 "fontWeight": "700",
+    #                 "letterSpacing": "0",
+    #                 "lineHeight": "1.5em",
+    #                 "position": "relative",
+    #                 "color": "#15294b",
+    #                 "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+    #             }),
+    #             dcc.Graph(id='plot-modelo-volumen')
+    #         ]),
+    #         html.Div( children=[
+    #             html.H2("Grafico Nro", style={
+    #                 "fontSize": "20px",
+    #                 "fontWeight": "700",
+    #                 "letterSpacing": "0",
+    #                 "lineHeight": "1.5em",
+    #                 "position": "relative",
+    #                 "color": "#15294b",
+    #                 "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+    #             }),
+    #             dcc.Graph(id='plot-modelo-volumen')
+    #         ]),
 
-        ], style={
-            "display": "flex",
-            "textAlign": "center",
-            "justifyContent": "space-evenly",
-            "alignItems": "center",
-            "maxWidth": "100%",
-            "padding": "1em 3em 2em 3em",
-            "margin": "0em  1em 2em",
-            "backgroundColor": "#fff",
-            "borderRadius": "4.2px",
-            "boxShadow": "0px 3px 10px -2px rgba(0, 0, 0, 0.2)",
-            }),
-    ]),
+    #     ], style={
+    #         "display": "flex",
+    #         "textAlign": "center",
+    #         "justifyContent": "space-evenly",
+    #         "alignItems": "center",
+    #         "maxWidth": "100%",
+    #         "padding": "1em 3em 2em 3em",
+    #         "margin": "0em  1em 2em",
+    #         "backgroundColor": "#fff",
+    #         "borderRadius": "4.2px",
+    #         "boxShadow": "0px 3px 10px -2px rgba(0, 0, 0, 0.2)",
+    #         }),
+    # ]),
 
-    # ----- ANALISIS DE LA MATRIZ DE LAS MASAS -----
-    html.Div(children=[
-        html.Div( children=[
-            html.H2("Analisis de la Matriz de Masas", style={
-                "fontSize": "20px",
-                "fontWeight": "700",
-                "letterSpacing": "0",
-                "lineHeight": "1.5em",
-                "position": "relative",
-                "color": "#15294b",
-                "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
-            }),
-            dcc.Graph(id='plot-modelo-grillas')
-        ]),
+    # # ----- ANALISIS DE LA MATRIZ DE LAS MASAS -----
+    # html.Div(children=[
+    #     html.Div( children=[
+    #         html.H2("Analisis de la Matriz de Masas", style={
+    #             "fontSize": "20px",
+    #             "fontWeight": "700",
+    #             "letterSpacing": "0",
+    #             "lineHeight": "1.5em",
+    #             "position": "relative",
+    #             "color": "#15294b",
+    #             "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+    #         }),
+    #         dcc.Graph(id='plot-modelo-grillas')
+    #     ]),
         
-    ], style={
-        "display": "flex",
-        "textAlign": "center",
-        "justifyContent": "center",
-        "alignItems": "center",
-        "maxWidth": "100%",
-        "padding": "1em 3em 2em 3em",
-        "margin": "0em  1em 2em",
-        "backgroundColor": "#fff",
-        "borderRadius": "4.2px",
-        "boxShadow": "0px 3px 10px -2px rgba(0, 0, 0, 0.2)",
-    }),
+    # ], style={
+    #     "display": "flex",
+    #     "textAlign": "center",
+    #     "justifyContent": "center",
+    #     "alignItems": "center",
+    #     "maxWidth": "100%",
+    #     "padding": "1em 3em 2em 3em",
+    #     "margin": "0em  1em 2em",
+    #     "backgroundColor": "#fff",
+    #     "borderRadius": "4.2px",
+    #     "boxShadow": "0px 3px 10px -2px rgba(0, 0, 0, 0.2)",
+    # }),
 
-    # ----- ANALISIS ESTATICO EN X -----
-    html.Div(children=[
+    # # ----- ANALISIS ESTATICO EN X -----
+    # html.Div(children=[
 
-        html.H2("ANALISIS ESTATICO EN X", style={
-            "fontSize": "20px",
-            "fontWeight": "700",
-            "letterSpacing": "0",
-            "lineHeight": "1.5em",
-            "position": "relative",
-            "color": "#15294b",
-            "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif",
-            "textAlign": "center",
-            "paddingBottom": "0px",
-            "marginBottom": "0px",
-        }),
+    #     html.H2("ANALISIS ESTATICO EN X", style={
+    #         "fontSize": "20px",
+    #         "fontWeight": "700",
+    #         "letterSpacing": "0",
+    #         "lineHeight": "1.5em",
+    #         "position": "relative",
+    #         "color": "#15294b",
+    #         "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif",
+    #         "textAlign": "center",
+    #         "paddingBottom": "0px",
+    #         "marginBottom": "0px",
+    #     }),
 
-        html.Div(children=[
+    #     html.Div(children=[
 
-            html.Div( children=[
-                html.H2("Grafico Nro", style={
-                    "fontSize": "20px",
-                    "fontWeight": "700",
-                    "letterSpacing": "0",
-                    "lineHeight": "1.5em",
-                    "paddingBottom": "15px",
-                    "position": "relative",
-                    "color": "#15294b",
-                    "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
-                }),
-                dcc.Graph(id='plot-modelo-grillas')
-            ]),
-            html.Div( children=[
-                html.H2("Grafico Nro", style={
-                    "fontSize": "20px",
-                    "fontWeight": "700",
-                    "letterSpacing": "0",
-                    "lineHeight": "1.5em",
-                    "paddingBottom": "15px",
-                    "position": "relative",
-                    "color": "#15294b",
-                    "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
-                }),
-                dcc.Graph(id='plot-modelo-volumen')
-            ]),
+    #         html.Div( children=[
+    #             html.H2("Grafico Nro", style={
+    #                 "fontSize": "20px",
+    #                 "fontWeight": "700",
+    #                 "letterSpacing": "0",
+    #                 "lineHeight": "1.5em",
+    #                 "paddingBottom": "15px",
+    #                 "position": "relative",
+    #                 "color": "#15294b",
+    #                 "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+    #             }),
+    #             dcc.Graph(id='plot-modelo-grillas')
+    #         ]),
+    #         html.Div( children=[
+    #             html.H2("Grafico Nro", style={
+    #                 "fontSize": "20px",
+    #                 "fontWeight": "700",
+    #                 "letterSpacing": "0",
+    #                 "lineHeight": "1.5em",
+    #                 "paddingBottom": "15px",
+    #                 "position": "relative",
+    #                 "color": "#15294b",
+    #                 "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+    #             }),
+    #             dcc.Graph(id='plot-modelo-volumen')
+    #         ]),
 
-        ], style={
-            "display": "flex",
-            "textAlign": "center",
-            "justifyContent": "space-evenly",
-            "alignItems": "center",
-            "maxWidth": "100%",
-            "padding": "1em 3em 2em 3em",
-            "margin": "0em  1em 2em",
-            "backgroundColor": "#fff",
-            "borderRadius": "4.2px",
-            "boxShadow": "0px 3px 10px -2px rgba(0, 0, 0, 0.2)",
-        }),
-    ]),
+    #     ], style={
+    #         "display": "flex",
+    #         "textAlign": "center",
+    #         "justifyContent": "space-evenly",
+    #         "alignItems": "center",
+    #         "maxWidth": "100%",
+    #         "padding": "1em 3em 2em 3em",
+    #         "margin": "0em  1em 2em",
+    #         "backgroundColor": "#fff",
+    #         "borderRadius": "4.2px",
+    #         "boxShadow": "0px 3px 10px -2px rgba(0, 0, 0, 0.2)",
+    #     }),
+    # ]),
 
-    # ----- ANALISIS ESTATICO EN Y -----
-    html.Div(children=[
+    # # ----- ANALISIS ESTATICO EN Y -----
+    # html.Div(children=[
 
-        html.H2("ANALISIS ESTATICO EN Y", style={
-            "fontSize": "20px",
-            "fontWeight": "700",
-            "letterSpacing": "0",
-            "lineHeight": "1.5em",
-            "position": "relative",
-            "color": "#15294b",
-            "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif",
-            "textAlign": "center",
-            "paddingBottom": "0px",
-            "marginBottom": "0px"
-        }),
+    #     html.H2("ANALISIS ESTATICO EN Y", style={
+    #         "fontSize": "20px",
+    #         "fontWeight": "700",
+    #         "letterSpacing": "0",
+    #         "lineHeight": "1.5em",
+    #         "position": "relative",
+    #         "color": "#15294b",
+    #         "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif",
+    #         "textAlign": "center",
+    #         "paddingBottom": "0px",
+    #         "marginBottom": "0px"
+    #     }),
 
-        html.Div(children=[
+    #     html.Div(children=[
 
-            html.Div( children=[
-                html.H2("Grafico Nro", style={
-                    "fontSize": "20px",
-                    "fontWeight": "700",
-                    "letterSpacing": "0",
-                    "lineHeight": "1.5em",
-                    "paddingBottom": "15px",
-                    "position": "relative",
-                    "color": "#15294b",
-                    "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
-                }),
-                dcc.Graph(id='plot-modelo-grillas')
-            ]),
-            html.Div( children=[
-                html.H2("Grafico Nro", style={
-                    "fontSize": "20px",
-                    "fontWeight": "700",
-                    "letterSpacing": "0",
-                    "lineHeight": "1.5em",
-                    "paddingBottom": "15px",
-                    "position": "relative",
-                    "color": "#15294b",
-                    "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
-                }),
-                dcc.Graph(id='plot-modelo-volumen')
-            ]),
-        ], style={
-            "display": "flex",
-            "textAlign": "center",
-            "justifyContent": "space-evenly",
-            "alignItems": "center",
-            "maxWidth": "100%",
-            "padding": "1em 3em 2em 3em",
-            "margin": "0em  1em 2em",
-            "backgroundColor": "#fff",
-            "borderRadius": "4.2px",
-            "boxShadow": "0px 3px 10px -2px rgba(0, 0, 0, 0.2)",
-        }),
+    #         html.Div( children=[
+    #             html.H2("Grafico Nro", style={
+    #                 "fontSize": "20px",
+    #                 "fontWeight": "700",
+    #                 "letterSpacing": "0",
+    #                 "lineHeight": "1.5em",
+    #                 "paddingBottom": "15px",
+    #                 "position": "relative",
+    #                 "color": "#15294b",
+    #                 "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+    #             }),
+    #             dcc.Graph(id='plot-modelo-grillas')
+    #         ]),
+    #         html.Div( children=[
+    #             html.H2("Grafico Nro", style={
+    #                 "fontSize": "20px",
+    #                 "fontWeight": "700",
+    #                 "letterSpacing": "0",
+    #                 "lineHeight": "1.5em",
+    #                 "paddingBottom": "15px",
+    #                 "position": "relative",
+    #                 "color": "#15294b",
+    #                 "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+    #             }),
+    #             dcc.Graph(id='plot-modelo-volumen')
+    #         ]),
+    #     ], style={
+    #         "display": "flex",
+    #         "textAlign": "center",
+    #         "justifyContent": "space-evenly",
+    #         "alignItems": "center",
+    #         "maxWidth": "100%",
+    #         "padding": "1em 3em 2em 3em",
+    #         "margin": "0em  1em 2em",
+    #         "backgroundColor": "#fff",
+    #         "borderRadius": "4.2px",
+    #         "boxShadow": "0px 3px 10px -2px rgba(0, 0, 0, 0.2)",
+    #     }),
 
-    ]),
+    # ]),
 
-    # ----- ANALISIS DINAMICO MODAL ESPECTRAL -----
-    html.Div(children=[
+    # # ----- ANALISIS DINAMICO MODAL ESPECTRAL -----
+    # html.Div(children=[
 
-        html.H2("ANALISIS DINAMICO MODAL ESPECTRAL", style={
-            "fontSize": "20px",
-            "fontWeight": "700",
-            "letterSpacing": "0",
-            "lineHeight": "1.5em",
-            "position": "relative",
-            "color": "#15294b",
-            "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif",
-            "textAlign": "center",
-            "paddingBottom": "0px",
-            "marginBottom": "0px"
-        }),
+    #     html.H2("ANALISIS DINAMICO MODAL ESPECTRAL", style={
+    #         "fontSize": "20px",
+    #         "fontWeight": "700",
+    #         "letterSpacing": "0",
+    #         "lineHeight": "1.5em",
+    #         "position": "relative",
+    #         "color": "#15294b",
+    #         "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif",
+    #         "textAlign": "center",
+    #         "paddingBottom": "0px",
+    #         "marginBottom": "0px"
+    #     }),
 
-        html.Div(children=[
+    #     html.Div(children=[
 
-            html.Div(children=[
+    #         html.Div(children=[
 
-                html.Div( children=[
-                    html.H2("Parrafo", style={
-                        "fontSize": "20px",
-                        "fontWeight": "700",
-                        "letterSpacing": "0",
-                        "lineHeight": "1.5em",
-                        "paddingBottom": "15px",
-                        "position": "relative",
-                        "color": "#15294b",
-                        "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
-                    }),
-                    html.Div(children=[
-                        html.P("Al comparar la cortante basal obtenida en el análisis dinámico en X" 
-                               "(1878.99 kN) y el 80% de la cortante basal del análisis estático en"
-                                "X (1698.31 kN), se obtiene que NO es necesario escalar en X. En la"
-                                 " dirección Y, la cortante basal obtenida en el análisis dinámico es "
-                                 "1842.82 kN y el 80% de la cortante basal del análisis estático es 1698.31 kN. "
-                                "Por lo que NO es necesario escalar en Y.")
-                    ]),
-                ]),
+    #             html.Div( children=[
+    #                 html.H2("Parrafo", style={
+    #                     "fontSize": "20px",
+    #                     "fontWeight": "700",
+    #                     "letterSpacing": "0",
+    #                     "lineHeight": "1.5em",
+    #                     "paddingBottom": "15px",
+    #                     "position": "relative",
+    #                     "color": "#15294b",
+    #                     "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+    #                 }),
+    #                 html.Div(children=[
+    #                     html.P("Al comparar la cortante basal obtenida en el análisis dinámico en X" 
+    #                            "(1878.99 kN) y el 80% de la cortante basal del análisis estático en"
+    #                             "X (1698.31 kN), se obtiene que NO es necesario escalar en X. En la"
+    #                              " dirección Y, la cortante basal obtenida en el análisis dinámico es "
+    #                              "1842.82 kN y el 80% de la cortante basal del análisis estático es 1698.31 kN. "
+    #                             "Por lo que NO es necesario escalar en Y.")
+    #                 ]),
+    #             ]),
 
-                html.Div( children=[
-                    html.H2("ANÁLISIS DINÁMICO SIN ESCALAR", style={
-                        "fontSize": "20px",
-                        "fontWeight": "700",
-                        "letterSpacing": "0",
-                        "lineHeight": "1.5em",
-                        "paddingBottom": "15px",
-                        "position": "relative",
-                        "color": "#15294b",
-                        "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
-                    }),
-                    html.Div(children=[
-                        # dcc.Graph(id='plot-modelo-volumen')
-                        # DATAFRAME DE ANALISIS SIN ESCALAR
+    #             html.Div( children=[
+    #                 html.H2("ANÁLISIS DINÁMICO SIN ESCALAR", style={
+    #                     "fontSize": "20px",
+    #                     "fontWeight": "700",
+    #                     "letterSpacing": "0",
+    #                     "lineHeight": "1.5em",
+    #                     "paddingBottom": "15px",
+    #                     "position": "relative",
+    #                     "color": "#15294b",
+    #                     "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+    #                 }),
+    #                 html.Div(children=[
+    #                     # dcc.Graph(id='plot-modelo-volumen')
+    #                     # DATAFRAME DE ANALISIS SIN ESCALAR
 
-                    ]),
-                ]),
+    #                 ]),
+    #             ]),
 
-            ]), 
+    #         ]), 
 
-            html.Div(children=[
+    #         html.Div(children=[
 
-                html.Div( children=[
-                    html.H2("ANÁLISIS DINÁMICO FINAL", style={
-                        "fontSize": "20px",
-                        "fontWeight": "700",
-                        "letterSpacing": "0",
-                        "lineHeight": "1.5em",
-                        "paddingBottom": "15px",
-                        "position": "relative",
-                        "color": "#15294b",
-                        "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
-                    }),
-                    html.Div(children=[
-                        # dcc.Graph(id='plot-modelo-volumen')
-                        # DATA FRAME DE ANALISI DINAMICO
-                    ]),
-                ]),
+    #             html.Div( children=[
+    #                 html.H2("ANÁLISIS DINÁMICO FINAL", style={
+    #                     "fontSize": "20px",
+    #                     "fontWeight": "700",
+    #                     "letterSpacing": "0",
+    #                     "lineHeight": "1.5em",
+    #                     "paddingBottom": "15px",
+    #                     "position": "relative",
+    #                     "color": "#15294b",
+    #                     "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+    #                 }),
+    #                 html.Div(children=[
+    #                     # dcc.Graph(id='plot-modelo-volumen')
+    #                     # DATA FRAME DE ANALISI DINAMICO
+    #                 ]),
+    #             ]),
 
-                html.Div( children=[
-                    html.H2("PLOTEO DE DISTORCIONES", style={
-                        "fontSize": "20px",
-                        "fontWeight": "700",
-                        "letterSpacing": "0",
-                        "lineHeight": "1.5em",
-                        "paddingBottom": "15px",
-                        "position": "relative",
-                        "color": "#15294b",
-                        "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
-                    }),
-                    html.Div(children=[
-                        dcc.Graph(id='plot-modelo-volumen')
+    #             html.Div( children=[
+    #                 html.H2("PLOTEO DE DISTORCIONES", style={
+    #                     "fontSize": "20px",
+    #                     "fontWeight": "700",
+    #                     "letterSpacing": "0",
+    #                     "lineHeight": "1.5em",
+    #                     "paddingBottom": "15px",
+    #                     "position": "relative",
+    #                     "color": "#15294b",
+    #                     "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+    #                 }),
+    #                 html.Div(children=[
+    #                     dcc.Graph(id='plot-modelo-volumen')
 
-                    ]),
-                ]),
+    #                 ]),
+    #             ]),
 
-            ], style={
-                "display": "flex",
-                "textAlign": "center",
-            }),
+    #         ], style={
+    #             "display": "flex",
+    #             "textAlign": "center",
+    #         }),
 
 
-        ], style={
-            "display": "flex",
-            "flexDirection": "column",
-            "textAlign": "center",
-            "justifyContent": "space-evenly",
-            "alignItems": "center",
-            "maxWidth": "100%",
-            "padding": "1em 3em 2em 3em",
-            "margin": "0em  1em 2em",
-            "backgroundColor": "#fff",
-            "borderRadius": "4.2px",
-            "boxShadow": "0px 3px 10px -2px rgba(0, 0, 0, 0.2)",
-        }),
-    ]),
+    #     ], style={
+    #         "display": "flex",
+    #         "flexDirection": "column",
+    #         "textAlign": "center",
+    #         "justifyContent": "space-evenly",
+    #         "alignItems": "center",
+    #         "maxWidth": "100%",
+    #         "padding": "1em 3em 2em 3em",
+    #         "margin": "0em  1em 2em",
+    #         "backgroundColor": "#fff",
+    #         "borderRadius": "4.2px",
+    #         "boxShadow": "0px 3px 10px -2px rgba(0, 0, 0, 0.2)",
+    #     }),
+    # ]),
 
 ], style={
     "display": "flex",
@@ -898,23 +901,37 @@ def save_data(n_clicks, data_x, data_y, data_z):
     df_z.columns = ["Grid", "Espaciado"]
 
     # Generamos la malla
-    Nodes, Elems, Diap, start_viga_x, end_viga_x = GeoModel(df_x, df_y, df_z)
-    #print(Nodes)
-    #print(Elems)
-    #print(Diap)
+    Nodes, Elems, Diap = func.GeoModel(df_x, df_y, df_z)
+   
     # Creacion de nodos y volumen
-    ModelamientoNodos(Nodes, Elems, Diap, df_x, start_viga_x, end_viga_x)
+    func.ModelamientoNodos(Nodes, Elems, Diap)
+
+    # Asignacion de masas y modos de vibracion
+    Tmodes, MF, H= func.AsignacionMasasModosVibracion(Nodes, Elems, df_z)
+
+    # Analisis estatico en X
+    F, E030 = func.AnalisisEstaticoX(Tmodes, MF, H, df_x, df_y, df_z, Diap)
+
+    # Analisis estatico en Y
+    VS = func.AnalisisEstaticoY(Tmodes, MF, H,F, df_x, df_y, df_z, Diap)
+
+    # Masas efectivas
+    ni, modo, Ux, Uy, Rz = func.MasasEfectivas(df_z, MF, Tmodes)
+
+    # Analisis dinamico modal espectral
+    nz = df_z.shape[0] - 1
+    func.AnalisisDinamicoModalEspectral(E030,MF,modo,Tmodes,nz,ni, Ux, Uy, Rz, VS, df_z)
 
     # Plot grillas y modelo volumen
     img_modelo_grillas = Image.open('plots/modelo_grillas.jpg')
     fig_grillas = px.imshow(img = img_modelo_grillas)
-    fig_grillas.update_layout(coloraxis_showscale=False, width=980, height=1089)
+    fig_grillas.update_layout(coloraxis_showscale=False) #, width=980, height=1089
     fig_grillas.update_xaxes(showticklabels=False)
     fig_grillas.update_yaxes(showticklabels=False)
 
     img_modelo_volumen = Image.open('plots/modelo_volumen.jpg')
     fig_volumen = px.imshow(img = img_modelo_volumen)
-    fig_volumen.update_layout(coloraxis_showscale=False, width=980, height=1089)
+    fig_volumen.update_layout(coloraxis_showscale=False) # , width=980, height=1089
     fig_volumen.update_xaxes(showticklabels=False)
     fig_volumen.update_yaxes(showticklabels=False)
     
