@@ -280,6 +280,9 @@ def AsignacionMasasModosVibracion(Nodes, Elems, df_z):
     plt.savefig('plots/vibracion_3.jpg')
     """
     # Generacion de Tmodes 
+    opsplt.plot_modeshape(1, 100)
+    opsplt.plot_modeshape(2, 100)
+    opsplt.plot_modeshape(3, 100)
     vals = ope.eigen(Nmodes)
     #vals = ope.eigen('-fullGenLapack',Nmodes)
     Tmodes = np.zeros(len(vals))
@@ -367,7 +370,7 @@ def AnalisisEstaticoX(Tmodes, MF, H, df_x, df_y, df_z, Diap):
     #print('\nANÁLISIS ESTÁTICO EN X')
     #print(df1_x.round(4))
     plt.figure()
-    opsv.plot_defo(1000,fig_wi_he=(30., 25.),az_el=(-130,20))
+    opsv.plot_defo(100,fig_wi_he=(30., 25.),az_el=(-130,20))
     plt.savefig("plots/deformacion_x.jpg")
 
     return F, E030
@@ -415,7 +418,7 @@ def AnalisisEstaticoY(Tmodes, MF, H,F, df_x, df_y, df_z, Diap):
     #print('\nANÁLISIS ESTÁTICO EN Y')
     #print(df1_y.round(4))
     plt.figure()
-    opsv.plot_defo(1000,fig_wi_he=(30., 25.),az_el=(-130,20))
+    opsv.plot_defo(200,fig_wi_he=(30., 25.),az_el=(-130,20))
     plt.savefig("plots/deformacion_y.jpg")
 
     return VS
