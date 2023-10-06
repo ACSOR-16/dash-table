@@ -55,6 +55,9 @@ def trim(im):
 
 # ---- CREACION DEL MODELO ----
 def GeoModel(df_x, df_y, df_z):
+    ope.wipe()
+    ope.model('basic', '-ndm', 3, '-ndf', 6)
+
     Lx = df_x["Espaciado"].sum()
     Ly = df_y["Espaciado"].sum()
     Lz = df_z["Espaciado"].sum()
@@ -124,8 +127,7 @@ def GeoModel(df_x, df_y, df_z):
 
 
 def ModelamientoNodos(Nodes, Elems, Diap):
-    ope.wipe()
-    ope.model('basic', '-ndm', 3, '-ndf', 6)
+    
     RigidDiaphragm = 'ON'
     #  ----- CREANDO NODOS DEL MODELO ----
     for Ni in Nodes:
@@ -243,8 +245,8 @@ def AsignacionMasasModosVibracion(Nodes, Elems, df_z):
             ope.mass(int(Ni[0]),0.0,0.0,0.0)
         # Esquinero
         elif Ni[4] == 0.25:
-            xx = float(df_E[((df_E['node_1']==Ni[0])|(df_E['node_2']==Ni[0]))&(df_E['col_viga']==2)]['espaciado'])/2
-            yy = float(df_E[((df_E['node_1']==Ni[0])|(df_E['node_2']==Ni[0]))&(df_E['col_viga']==3)]['espaciado'])/2
+            xx = (df_E[((df_E['node_1']==Ni[0])|(df_E['node_2']==Ni[0]))&(df_E['col_viga']==2)]['espaciado']/2).sum()
+            yy = (df_E[((df_E['node_1']==Ni[0])|(df_E['node_2']==Ni[0]))&(df_E['col_viga']==3)]['espaciado']/2).sum()
             carga = wTotal*xx*yy
             ope.mass(int(Ni[0]), carga, carga,0.0)
         # Perimetrales
@@ -277,12 +279,12 @@ def AsignacionMasasModosVibracion(Nodes, Elems, df_z):
     """
     # Generacion de Tmodes 
     vals = ope.eigen(Nmodes)
+    #vals = ope.eigen('-fullGenLapack',Nmodes)
     Tmodes = np.zeros(len(vals))
     for i in range(Nmodes):
         Tmodes[i] = 2*np.pi/vals[i]**0.5
         
     df_Tmodes = pd.DataFrame({'n_mode':[i+1 for i in range(len(Tmodes))], 'Tmode':Tmodes})
-        
 
     # Realizamos un análisis para obtener la matriz de Masas
     ope.wipeAnalysis()
@@ -292,7 +294,7 @@ def AsignacionMasasModosVibracion(Nodes, Elems, df_z):
     ope.algorithm('Linear')
     ope.analysis('Transient')
     ope.integrator('GimmeMCK',1.0,0.0,0.0)
-    ope.analyze(1,0.0)
+    ope.analyze(1,0.0, )
 
     # Obtenemos la matriz de Masas
     nz = df_z.shape[0] - 1
@@ -300,6 +302,7 @@ def AsignacionMasasModosVibracion(Nodes, Elems, df_z):
     Mmatrix = ope.printA('-ret')
     Mmatrix = np.array(Mmatrix).reshape((N,N))
     MF = Mmatrix[-3*nz:,-3*nz:]
+    
     np.set_printoptions(precision=3,linewidth=300,suppress=True)
     #print(MF)
     H = np.array([df_z['Espaciado'].iloc[:i+1].sum() for i in  range(df_z.shape[0]-1)])
@@ -309,7 +312,7 @@ def AsignacionMasasModosVibracion(Nodes, Elems, df_z):
     E030 = EspectroE030(Tmodes,Z=0.45,U=1.0,S=1.0,Tp=0.4,Tl=2.5,R=Ro)
     F, k = GetStaticLoads(E030[0],P,H,Tmodes[0])
     #print(E030[0],k)
-    
+
     return Tmodes, MF, H
 
 def AnalisisEstaticoX(Tmodes, MF, H, df_x, df_y, df_z, Diap):
@@ -360,7 +363,7 @@ def AnalisisEstaticoX(Tmodes, MF, H, df_x, df_y, df_z, Diap):
         df2_x = pd.DataFrame({'Nivel':[i+1],'Vx(kN)':[VS[i]/1000],'UxMax(cm)':[desX*100],'UyMax(cm)':[desY*100],'DriftX(‰)':[driftX],'DriftY(‰)':[driftY]})
         df1_x = pd.concat([df1_x, df2_x])
     #print('\nANÁLISIS ESTÁTICO EN X')
-    #print(df1.round(4))
+    #print(df1_x.round(4))
     plt.figure()
     opsv.plot_defo(1000,fig_wi_he=(30., 25.),az_el=(-130,20))
     plt.savefig("plots/deformacion_x.jpg")
@@ -422,7 +425,6 @@ def MasasEfectivas(df_z, MF, Tmodes):
     nz = int(df_z.shape[0]-1)
     Nmodes = 12
     modo = np.zeros((Nmodes,3*nz))
-    
 
     for j in range(1,Nmodes+1):
         ind = 0
@@ -444,7 +446,7 @@ def MasasEfectivas(df_z, MF, Tmodes):
     Mr = sum(sum(MF[2::3,2::3]))
 
     df1_m = pd.DataFrame({'Modo':[],'T(s)':[],'SumUx':[],'SumUy':[],'SumRz':[]})
-    print(modo)
+    
     for j in range(1,Nmodes+1):
         FPx = modo[j-1].T@MF@Ux
         FPy = modo[j-1].T@MF@Uy
