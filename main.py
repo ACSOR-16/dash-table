@@ -2,14 +2,15 @@ import numpy as np
 import pandas as pd
 import plotly.express as px
 from PIL import Image
-from openseespy.opensees import wipe, model, node, fix, fixZ, geomTransf, element, rigidDiaphragm
+import openseespy.opensees as ope
+import openseespyvis.Get_Rendering as opsplt
 import opsvis as opsv
 import matplotlib.pyplot as plt
 from dash import Dash, dash_table, dcc, html, Input, Output, State, callback
 from numpy import zeros
 import warnings
 warnings.filterwarnings("ignore")
-from ploteo import GeoModel, ModelamientoNodos
+import functions as func 
 
 ##
 app = Dash(__name__)
@@ -517,23 +518,37 @@ def save_data(n_clicks, data_x, data_y, data_z):
     df_z.columns = ["Grid", "Espaciado"]
 
     # Generamos la malla
-    Nodes, Elems, Diap, start_viga_x, end_viga_x = GeoModel(df_x, df_y, df_z)
-    #print(Nodes)
-    #print(Elems)
-    #print(Diap)
+    Nodes, Elems, Diap = func.GeoModel(df_x, df_y, df_z)
+   
     # Creacion de nodos y volumen
-    ModelamientoNodos(Nodes, Elems, Diap, df_x, start_viga_x, end_viga_x)
+    func.ModelamientoNodos(Nodes, Elems, Diap)
+
+    # Asignacion de masas y modos de vibracion
+    Tmodes, MF, H= func.AsignacionMasasModosVibracion(Nodes, Elems, df_z)
+
+    # Analisis estatico en X
+    F, E030 = func.AnalisisEstaticoX(Tmodes, MF, H, df_x, df_y, df_z, Diap)
+
+    # Analisis estatico en Y
+    VS = func.AnalisisEstaticoY(Tmodes, MF, H,F, df_x, df_y, df_z, Diap)
+
+    # Masas efectivas
+    ni, modo, Ux, Uy, Rz = func.MasasEfectivas(df_z, MF, Tmodes)
+
+    # Analisis dinamico modal espectral
+    nz = df_z.shape[0] - 1
+    func.AnalisisDinamicoModalEspectral(E030,MF,modo,Tmodes,nz,ni, Ux, Uy, Rz, VS, df_z)
 
     # Plot grillas y modelo volumen
     img_modelo_grillas = Image.open('plots/modelo_grillas.jpg')
     fig_grillas = px.imshow(img = img_modelo_grillas)
-    fig_grillas.update_layout(coloraxis_showscale=False, width=980, height=1089)
+    fig_grillas.update_layout(coloraxis_showscale=False) #, width=980, height=1089
     fig_grillas.update_xaxes(showticklabels=False)
     fig_grillas.update_yaxes(showticklabels=False)
 
     img_modelo_volumen = Image.open('plots/modelo_volumen.jpg')
     fig_volumen = px.imshow(img = img_modelo_volumen)
-    fig_volumen.update_layout(coloraxis_showscale=False, width=980, height=1089)
+    fig_volumen.update_layout(coloraxis_showscale=False) # , width=980, height=1089
     fig_volumen.update_xaxes(showticklabels=False)
     fig_volumen.update_yaxes(showticklabels=False)
     
