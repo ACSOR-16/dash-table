@@ -82,7 +82,7 @@ app.layout = html.Div(children=[
                    
                 )
             ], style={
-                "margin": "10px 10px 20px"
+                "margin": "10px 10px 10px"
             }),
             
             html.Div(children=[
@@ -130,7 +130,7 @@ app.layout = html.Div(children=[
                     # },
                 )
             ], style={
-                "margin": "10px 10px 20px"
+                "margin": "10px 10px 10px"
             }),
         ], style={
             "display": "flex",
@@ -193,7 +193,7 @@ app.layout = html.Div(children=[
                             "alignItems": "center",
                             "appearance": "none",
                             "backgroundColor": "#fff",
-                            "borderRadius": "24px",
+                            "borderRadius": "14px",
                             "borderStyle": "none",
                             "boxShadow": "rgba(0, 0, 0, .2) 0 3px 5px -1px,rgba(0, 0, 0, .14) 0 6px 10px 0,rgba(0, 0, 0, .12) 0 1px 18px 0",
                             "boxSizing": "border-box",
@@ -223,7 +223,7 @@ app.layout = html.Div(children=[
                             "zIndex": "0",
                         }),
             ], style={
-                "margin": "40px 0px 50px 50px"
+                "margin": "20px 0px 20px"
             }),
 
             html.Div(children=[
@@ -277,7 +277,7 @@ app.layout = html.Div(children=[
                             "alignItems": "center",
                             "appearance": "none",
                             "backgroundColor": "#fff",
-                            "borderRadius": "24px",
+                            "borderRadius": "14px",
                             "borderStyle": "none",
                             "boxShadow": "rgba(0, 0, 0, .2) 0 3px 5px -1px,rgba(0, 0, 0, .14) 0 6px 10px 0,rgba(0, 0, 0, .12) 0 1px 18px 0",
                             "boxSizing": "border-box",
@@ -307,7 +307,7 @@ app.layout = html.Div(children=[
                             "zIndex": "0",
                         }),
             ], style={
-                "margin": "40px 0px 50px 50px"
+                "margin": "20px 0px 20px"
             }),
 
             html.Div(children=[
@@ -361,7 +361,7 @@ app.layout = html.Div(children=[
                             "alignItems": "center",
                             "appearance": "none",
                             "backgroundColor": "#fff",
-                            "borderRadius": "24px",
+                            "borderRadius": "14px",
                             "borderStyle": "none",
                             "boxShadow": "rgba(0, 0, 0, .2) 0 3px 5px -1px,rgba(0, 0, 0, .14) 0 6px 10px 0,rgba(0, 0, 0, .12) 0 1px 18px 0",
                             "boxSizing": "border-box",
@@ -391,7 +391,7 @@ app.layout = html.Div(children=[
                             "zIndex": "0",
                         }),
             ], style={
-                "margin": "40px 0px 50px 50px"
+                "margin": "20px 0px 20px"
             })
         ], style={
             "display": "flex",
@@ -404,22 +404,22 @@ app.layout = html.Div(children=[
         html.Div(
             id='container-button-basic',
             children=[
-            html.Button('Generar Resultados', id='grabar-datos', n_clicks=0, 
+            html.Button('GENERAR RESULTADOS ', id='grabar-datos', n_clicks=0, 
                         style={
                             "alignItems": "center",
                             "appearance": "none",
-                            "backgroundColor": "#fff",
-                            "borderRadius": "24px",
+                            "backgroundColor": "#15294b",
+                            "borderRadius": "14px",
                             "borderStyle": "none",
                             "boxShadow": "rgba(0, 0, 0, .2) 0 3px 5px -1px,rgba(0, 0, 0, .14) 0 6px 10px 0,rgba(0, 0, 0, .12) 0 1px 18px 0",
                             "boxSizing": "border-box",
-                            "color": "#3c4043",
+                            "color": "white",
                             "cursor": "pointer",
                             "display": "inline-flex",
                             "fill": "currentcolor",
                             "fontFamily": "Roboto,Arial,sans-serif",
                             "fontSize": "14px",
-                            "fontWeight": "500",
+                            "fontWeight": "bold",
                             "height": "48px",
                             "justifyContent": "center",
                             "letterSpacing": ".25px",
@@ -441,10 +441,8 @@ app.layout = html.Div(children=[
                     
         ], style={
             "display": "flex",
-            "textAlign": "center",
             "justifyContent": "center",
-            "alignItems": "center",
-            "marginTop": "50px",
+            "width": "calc(100% - -15px)"
         }),
     ], style={
         "maxWidth": "100%",
@@ -478,10 +476,11 @@ app.layout = html.Div(children=[
                     "fontWeight": "700",
                     "letterSpacing": "0",
                     "lineHeight": "1.5em",
-                    "paddingBottom": "15px",
                     "position": "relative",
                     "color": "#15294b",
-                    "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+                    "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif",
+                    "paddingBottom": "0px",
+                    "marginBottom": "0px"
                 }),
 
                 html.Div(children=[
@@ -490,15 +489,16 @@ app.layout = html.Div(children=[
                 ]),# , width=980, height=1089 , style={"height": "900px", "width": "900px"}
             ]),
             html.Div( children=[
-                html.H2("MODELO DE VIGAS", style={
+                html.H2("MODELO DE VOLUMEN", style={
                     "fontSize": "20px",
                     "fontWeight": "700",
                     "letterSpacing": "0",
                     "lineHeight": "1.5em",
-                    "paddingBottom": "15px",
                     "position": "relative",
                     "color": "#15294b",
-                    "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+                    "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif",
+                    "paddingBottom": "0px",
+                    "marginBottom": "0px"
                 }),
                 dcc.Graph(id='plot-modelo-volumen', className="plot",style={"height": "900px", "width": "900px"})
             ]),
@@ -534,37 +534,57 @@ app.layout = html.Div(children=[
         html.Div(children=[
 
             html.Div( children=[
-                html.H2("Grafico Nro", style={
+                html.H2("MODOS DE VIBRACIÓN", style={
                     "fontSize": "20px",
                     "fontWeight": "700",
                     "letterSpacing": "0",
                     "lineHeight": "1.5em",
                     "position": "relative",
                     "color": "#15294b",
-                    "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+                    "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif",
                 }),
                 # dcc.Graph(id='plot-modelo-grillas')
                 html.Div(children=[
                     dash_table.DataTable(
                         id="dataframe_Tmodes",
+                        style_cell={
+                            'padding': '5px',
+                            "textAlign": "center"
+                            },
+                        style_header={
+                            'backgroundColor': '#9aa0a6',
+                            'fontWeight': 'bold',
+                            "color": "white",
+                            "textAlign": "center"
+                        }
                     )
                 ]),
             ]),
 
             html.Div( children=[
-                html.H2("Grafico Nro", style={
+                html.H2("MATRIZ DE MASAS", style={
                     "fontSize": "20px",
                     "fontWeight": "700",
                     "letterSpacing": "0",
                     "lineHeight": "1.5em",
                     "position": "relative",
                     "color": "#15294b",
-                    "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+                    "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif",
                 }),
                 # dcc.Graph(id='plot-modelo-volumen')
                 html.Div(children=[
                     dash_table.DataTable(
-                        id="analisis_masas", style_table={'overflowX': 'scroll'}
+                        id="analisis_masas", style_table={'overflowX': 'scroll'},
+                        style_cell={
+                            'padding': '5px',
+                            "textAlign": "center"
+                            },
+                        style_header={
+                            'backgroundColor': '#9aa0a6',
+                            'fontWeight': 'bold',
+                            "color": "white",
+                            "textAlign": "center"
+                        }
                     )
                 ]),
             ]),
@@ -603,7 +623,7 @@ app.layout = html.Div(children=[
         html.Div(children=[
 
             html.Div( children=[
-                html.H2("Grafico Nro", style={
+                html.H2("ANÁLISIS ESTÁTICO EN X", style={
                     "fontSize": "20px",
                     "fontWeight": "700",
                     "letterSpacing": "0",
@@ -611,17 +631,27 @@ app.layout = html.Div(children=[
                     "paddingBottom": "15px",
                     "position": "relative",
                     "color": "#15294b",
-                    "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+                    "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif",
                 }),
 
                 html.Div(children=[
                     dash_table.DataTable(
                         id="analisis_estatico_x",
+                        style_cell={
+                            'padding': '5px',
+                            "textAlign": "center"
+                            },
+                        style_header={
+                            'backgroundColor': '#9aa0a6',
+                            'fontWeight': 'bold',
+                            "color": "white",
+                            "textAlign": "center"
+                        }
                     )
                 ]),
             ]),
             html.Div( children=[
-                html.H2("Grafico Nro", style={
+                html.H2("PLOTEO DE DEFORMACIÓN X", style={
                     "fontSize": "20px",
                     "fontWeight": "700",
                     "letterSpacing": "0",
@@ -629,7 +659,9 @@ app.layout = html.Div(children=[
                     "paddingBottom": "15px",
                     "position": "relative",
                     "color": "#15294b",
-                    "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+                    "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif",
+                    "paddingBottom": "0px",
+                    "marginBottom": "0px"
                 }),
 
                 html.Div(children=[
@@ -671,34 +703,44 @@ app.layout = html.Div(children=[
         html.Div(children=[
 
             html.Div( children=[
-                html.H2("Grafico Nro", style={
+                html.H2("ANÁLSIS ESTÁTICO EN Y", style={
                     "fontSize": "20px",
                     "fontWeight": "700",
                     "letterSpacing": "0",
                     "lineHeight": "1.5em",
-                    "paddingBottom": "15px",
                     "position": "relative",
                     "color": "#15294b",
-                    "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+                    "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif",
                 }),
 
                 html.Div(children=[
                     dash_table.DataTable(
                         id="analisis_estatico_y",
+                        style_cell={
+                            'padding': '5px',
+                            "textAlign": "center"
+                            },
+                        style_header={
+                            'backgroundColor': '#9aa0a6',
+                            'fontWeight': 'bold',
+                            "color": "white",
+                            "textAlign": "center"
+                        }
                     )
                 ]),
 
             ]),
             html.Div( children=[
-                html.H2("Grafico Nro", style={
+                html.H2("PLOTEO DE DEFORMACIÓN Y", style={
                     "fontSize": "20px",
                     "fontWeight": "700",
                     "letterSpacing": "0",
                     "lineHeight": "1.5em",
-                    "paddingBottom": "15px",
                     "position": "relative",
                     "color": "#15294b",
-                    "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+                    "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif",
+                    "paddingBottom": "0px",
+                    "marginBottom": "0px"
                 }),
                 
                 html.Div(children=[
@@ -741,6 +783,16 @@ app.layout = html.Div(children=[
             html.Div(children=[
                     dash_table.DataTable(
                         id="masas_efectivas",
+                        style_cell={
+                            'padding': '5px',
+                            "textAlign": "center"
+                            },
+                        style_header={
+                            'backgroundColor': '#9aa0a6',
+                            'fontWeight': 'bold',
+                            "color": "white",
+                            "textAlign": "center"
+                        }
                     )
             ], style={
                 "display": "flex",
@@ -785,20 +837,31 @@ app.layout = html.Div(children=[
                         "fontWeight": "700",
                         "letterSpacing": "0",
                         "lineHeight": "1.5em",
-                        "paddingBottom": "15px",
                         "position": "relative",
                         "color": "#15294b",
-                        "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+                        "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif",
+                        "paddingBottom": "0px",
+                        "marginBottom": "0px"
                     }),
                     html.Div(children=[
                         dash_table.DataTable(
                             id="analisis_escalar",
+                            style_cell={
+                                'padding': '5px',
+                                "textAlign": "center"
+                                },
+                            style_header={
+                                'backgroundColor': '#9aa0a6',
+                                'fontWeight': 'bold',
+                                "color": "white",
+                                "textAlign": "center"
+                            }
                         )
                     ]),
-                ]),
+                ], style={"marginRight": "75px"}),
 
                 html.Div( children=[
-                    html.H2("TEXTO", style={
+                    html.H2("COMPARACIÓN", style={
                         "fontSize": "20px",
                         "fontWeight": "700",
                         "letterSpacing": "0",
@@ -806,13 +869,14 @@ app.layout = html.Div(children=[
                         "paddingBottom": "15px",
                         "position": "relative",
                         "color": "#15294b",
-                        "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+                        "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif",
+                        "marginBottom": "0"
                     }),
                     html.Div(children=[
                         html.P(id="texto-descriptivo")
 
-                    ], style={"width": "500px"}),
-                ]),
+                    ], style={"width": "500px", "textAlign": "justify"}),
+                ], style={"marginLeft": "75px",}),
 
             ], style={
                 "display": "flex",
@@ -832,11 +896,23 @@ app.layout = html.Div(children=[
                         "paddingBottom": "15px",
                         "position": "relative",
                         "color": "#15294b",
-                        "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+                        "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif",
+                        "paddingBottom": "0px",
+                        "marginBottom": "0px"
                     }),
                     html.Div(children=[
                         dash_table.DataTable(
                             id="analisis_final",
+                            style_cell={
+                                'padding': '5px',
+                                "textAlign": "center"
+                                },
+                            style_header={
+                                'backgroundColor': '#9aa0a6',
+                                'fontWeight': 'bold',
+                                "color": "white",
+                                "textAlign": "center"
+                            }
                         )
                     ]),
                 ]),
@@ -847,13 +923,13 @@ app.layout = html.Div(children=[
                         "fontWeight": "700",
                         "letterSpacing": "0",
                         "lineHeight": "1.5em",
-                        "paddingBottom": "15px",
                         "position": "relative",
                         "color": "#15294b",
-                        "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+                        "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif",
+                        "marginbottom": "0px"
                     }),
                     html.Div(children=[
-                        dcc.Graph(id='plot-distorciones', className="plot",style={"height": "800px", "width": "800px"})
+                        dcc.Graph(id='plot-distorciones', className="plot",style={"height": "600px", "width": "800px"})
 
                     ]),
                 ]),
@@ -861,7 +937,7 @@ app.layout = html.Div(children=[
             ], style={
                 "display": "flex",
                 "textAlign": "center",
-                "alingItem": "center"
+                "alignItems": "center"
             }),
 
 
@@ -1021,7 +1097,7 @@ def save_data(n_clicks, data_x, data_y, data_z):
 
     dataframe_final = analisis_final.to_dict("records")
 
-    img_distorciones = Image.open("./distorsion_din.png")
+    img_distorciones = Image.open("plots/distorsion_din.jpg")
     fig_distorciones = px.imshow(img = img_distorciones)
     fig_distorciones.update_layout(coloraxis_showscale=False) # , width=980, height=1089
     fig_distorciones.update_xaxes(showticklabels=False)

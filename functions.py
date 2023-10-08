@@ -470,7 +470,7 @@ def MasasEfectivas(df_z, MF, Tmodes):
             ni = j
         df2_m = pd.DataFrame({'Modo':[j], 'T(s)':[Tmodes[j-1]],'SumUx':[SUMx],'SumUy':[SUMy],'SumRz':[SUMr]})
         df1_m = pd.concat([df1_m, df2_m])
-    print(df1_m.round(5))
+    # df1_m = df1_m.round(4)
     print('N° mínimo de Modos a considerar:',ni)
 
     return ni, modo, Ux, Uy, Rz, df1_m
@@ -543,7 +543,7 @@ def AnalisisDinamicoModalEspectral(E030,MF,modo,Tmodes,nz,ni, Ux, Uy, Rz, VS, df
     DDx, ΔDx, VDx, DDy, ΔDy, VDy, df4 = getCombo(E030,MF,modo,Tmodes,3*nz,ni, Ux, Uy, Rz)
     print('\nANÁLISIS DINÁMICO SIN ESCALAR')
     df4 = df4.astype({'Nivel':int})
-    print(df4.round(4))
+    df4 = df4.round(4)
 
     # Escalamiento de los resultados del análisis dinámico
     if VDx[0::3][0]<0.80*VS[0]:
@@ -582,7 +582,7 @@ def AnalisisDinamicoModalEspectral(E030,MF,modo,Tmodes,nz,ni, Ux, Uy, Rz, VS, df
         df_d1 = pd.concat([df_d1, df_d2])
 
     df5 = df_d1.astype({'Nivel':int})
-    print(df5.round(4))
+    df5 = df5.round(4)
 
     # Ploteamos las Distorsiones
     vecX = np.array(df5.loc[:,'Δx(‰)'])
