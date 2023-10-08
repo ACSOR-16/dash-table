@@ -317,8 +317,7 @@ def AsignacionMasasModosVibracion(Nodes, Elems, df_z):
     E030 = EspectroE030(Tmodes,Z=0.45,U=1.0,S=1.0,Tp=0.4,Tl=2.5,R=Ro)
     F, k = GetStaticLoads(E030[0],P,H,Tmodes[0])
     #print(E030[0],k)
-
-    return Tmodes, MF, H
+    return Tmodes, MF, H, df_Tmodes
 
 def AnalisisEstaticoX(Tmodes, MF, H, df_x, df_y, df_z, Diap):
     np.set_printoptions(precision=3,linewidth=300,suppress=True)
@@ -372,8 +371,10 @@ def AnalisisEstaticoX(Tmodes, MF, H, df_x, df_y, df_z, Diap):
     plt.figure()
     opsv.plot_defo(100,fig_wi_he=(30., 25.),az_el=(-130,20))
     plt.savefig("plots/deformacion_x.jpg")
-
-    return F, E030
+    im = Image.open("plots/deformacion_x.jpg")
+    im = trim(im)
+    im.save("plots/deformacion_x.jpg")
+    return F, E030, df1_x
     
 
 def AnalisisEstaticoY(Tmodes, MF, H,F, df_x, df_y, df_z, Diap):
@@ -420,8 +421,10 @@ def AnalisisEstaticoY(Tmodes, MF, H,F, df_x, df_y, df_z, Diap):
     plt.figure()
     opsv.plot_defo(200,fig_wi_he=(30., 25.),az_el=(-130,20))
     plt.savefig("plots/deformacion_y.jpg")
-
-    return VS
+    im = Image.open("plots/deformacion_y.jpg")
+    im = trim(im)
+    im.save("plots/deformacion_y.jpg")
+    return VS, df1_y
 
 
 def MasasEfectivas(df_z, MF, Tmodes):
@@ -469,7 +472,8 @@ def MasasEfectivas(df_z, MF, Tmodes):
         df1_m = pd.concat([df1_m, df2_m])
     print(df1_m.round(5))
     print('N° mínimo de Modos a considerar:',ni)
-    return ni, modo, Ux, Uy, Rz
+
+    return ni, modo, Ux, Uy, Rz, df1_m
 
 def getCombo(E030,MF,modo,Tmodes,NT,ni, Ux, Uy, Rz):
 
@@ -593,4 +597,9 @@ def AnalisisDinamicoModalEspectral(E030,MF,modo,Tmodes,nz,ni, Ux, Uy, Rz, VS, df
     plt.ylabel('Nivel')
     #plt.axis([-0.05,lim,-0.05,nz+0.05])
     plt.yticks(np.arange(0, nz+0.05, 1))
-    plt.savefig('./distorsion_din.png')
+    plt.savefig('plots/distorsion_din.jpg')
+    im = Image.open("plots/distorsion_din.jpg")
+    im = trim(im)
+    im.save("plots/distorsion_din.jpg")
+
+    return df4, texto1, df5
