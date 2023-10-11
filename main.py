@@ -2,11 +2,11 @@ import numpy as np
 import pandas as pd
 import plotly.express as px
 from PIL import Image
-import openseespy.opensees as ope
-import openseespyvis.Get_Rendering as opsplt
-import opsvis as opsv
-#import openseespy.postprocessing.ops_vis as opsv
-#import openseespy.postprocessing.Get_Rendering as opsplt
+# import openseespy.opensees as ope
+# import openseespyvis.Get_Rendering as opsplt
+# import opsvis as opsv
+# import openseespy.postprocessing.ops_vis as opsv
+# import openseespy.postprocessing.Get_Rendering as opsplt
 import matplotlib.pyplot as plt
 from dash import Dash, dash_table, dcc, html, Input, Output, State, callback
 from numpy import zeros
@@ -404,41 +404,42 @@ app.layout = html.Div(children=[
         html.Div(
             id='container-button-basic',
             children=[
-            html.Button('GENERAR RESULTADOS ', id='grabar-datos', n_clicks=0, 
-                        style={
-                            "alignItems": "center",
-                            "appearance": "none",
-                            "backgroundColor": "#15294b",
-                            "borderRadius": "14px",
-                            "borderStyle": "none",
-                            "boxShadow": "rgba(0, 0, 0, .2) 0 3px 5px -1px,rgba(0, 0, 0, .14) 0 6px 10px 0,rgba(0, 0, 0, .12) 0 1px 18px 0",
-                            "boxSizing": "border-box",
-                            "color": "white",
-                            "cursor": "pointer",
-                            "display": "inline-flex",
-                            "fill": "currentcolor",
-                            "fontFamily": "Roboto,Arial,sans-serif",
-                            "fontSize": "14px",
-                            "fontWeight": "bold",
-                            "height": "48px",
-                            "justifyContent": "center",
-                            "letterSpacing": ".25px",
-                            "lineHeight": "normal",
-                            "maxWidth": "100%",
-                            "overflow": "visible",
-                            "padding": "2px 24px",
-                            "position": "relative",
-                            "textAlign": "center",
-                            "textTransform": "none",
-                            "transition": "box-shadow 280ms cubic-bezier(.4, 0, .2, 1),opacity 15ms linear 30ms,transform 270ms cubic-bezie,(0, 0, .2, 1) 0ms",
-                            "userSelect": "none",
-                            "webkitUserSelect": "none",
-                            "touchAction": "manipulation",
-                            "width": "auto",
-                            "willChange": "transform,opacity",
-                            "zIndex": "0",
-                        }),
-                    
+            
+                html.Button('GENERAR RESULTADOS ', id='grabar-datos', n_clicks=0, 
+                    style={
+                        "alignItems": "center",
+                        "appearance": "none",
+                        "backgroundColor": "#15294b",
+                        "borderRadius": "14px",
+                        "borderStyle": "none",
+                        "boxShadow": "rgba(0, 0, 0, .2) 0 3px 5px -1px,rgba(0, 0, 0, .14) 0 6px 10px 0,rgba(0, 0, 0, .12) 0 1px 18px 0",
+                        "boxSizing": "border-box",
+                        "color": "white",
+                        "cursor": "pointer",
+                        "display": "inline-flex",
+                        "fill": "currentcolor",
+                        "fontFamily": "Roboto,Arial,sans-serif",
+                        "fontSize": "14px",
+                        "fontWeight": "bold",
+                        "height": "48px",
+                        "justifyContent": "center",
+                        "letterSpacing": ".25px",
+                        "lineHeight": "normal",
+                        "maxWidth": "100%",
+                        "overflow": "visible",
+                        "padding": "2px 24px",
+                        "position": "relative",
+                        "textAlign": "center",
+                        "textTransform": "none",
+                        "transition": "box-shadow 280ms cubic-bezier(.4, 0, .2, 1),opacity 15ms linear 30ms,transform 270ms cubic-bezie,(0, 0, .2, 1) 0ms",
+                        "userSelect": "none",
+                        "webkitUserSelect": "none",
+                        "touchAction": "manipulation",
+                        "width": "auto",
+                        "willChange": "transform,opacity",
+                        "zIndex": "0",
+                    }),
+                
         ], style={
             "display": "flex",
             "justifyContent": "center",
@@ -484,9 +485,8 @@ app.layout = html.Div(children=[
                 }),
 
                 html.Div(children=[
-                    # html.Img(src="./plots/modelo_grillas.jpg"),
-                    dcc.Graph(id='plot-modelo-grillas', className="plot",style={"height": "900px", "width": "900px"})
-                ]),# , width=980, height=1089 , style={"height": "900px", "width": "900px"}
+                    dcc.Graph(id='plot-modelo-grillas', className="plot_modelo",style={"height": "80vh", "width": "80vh"})
+                ]),
             ]),
             html.Div( children=[
                 html.H2("MODELO DE VOLUMEN", style={
@@ -500,20 +500,20 @@ app.layout = html.Div(children=[
                     "paddingBottom": "0px",
                     "marginBottom": "0px"
                 }),
-                dcc.Graph(id='plot-modelo-volumen', className="plot",style={"height": "900px", "width": "900px"})
+                dcc.Graph(id='plot-modelo-volumen', className="plot_modelo",style={"height": "80vh", "width": "80vh"})
             ]),
         ], style={
-            "display": "flex",
-            "textAlign": "center",
-            "justifyContent": "space-evenly",
-            "alignItems": "center",
-            "maxWidth": "100%",
-            "padding": "1em 3em 2em 3em",
-            "margin": "0em  1em 2em",
-            "backgroundColor": "#fff",
-            "borderRadius": "4.2px",
-            "boxShadow": "0px 3px 10px -2px rgba(0, 0, 0, 0.2)",
-            }),
+                "display": "flex",
+                "textAlign": "center",
+                "justifyContent": "space-evenly",
+                "alignItems": "center",
+                "maxWidth": "100%",
+                "padding": "1em 3em 2em 3em",
+                "margin": "0em  1em 2em",
+                "backgroundColor": "#fff",
+                "borderRadius": "4.2px",
+                "boxShadow": "0px 3px 10px -2px rgba(0, 0, 0, 0.2)",
+            }, className="plot_container"),
     ]),
 
     # ------ ASIGNACION DE MASAS Y MODOS DE VIBRACION -----
@@ -543,7 +543,7 @@ app.layout = html.Div(children=[
                     "color": "#15294b",
                     "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif",
                 }),
-                # dcc.Graph(id='plot-modelo-grillas')
+
                 html.Div(children=[
                     dash_table.DataTable(
                         id="dataframe_Tmodes",
@@ -571,7 +571,7 @@ app.layout = html.Div(children=[
                     "color": "#15294b",
                     "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif",
                 }),
-                # dcc.Graph(id='plot-modelo-volumen')
+                
                 html.Div(children=[
                     dash_table.DataTable(
                         id="analisis_masas", style_table={'overflowX': 'scroll'},
@@ -587,7 +587,7 @@ app.layout = html.Div(children=[
                         }
                     )
                 ]),
-            ]),
+            ], className="table_matriz_masas"),
             
 
         ], style={
@@ -601,7 +601,7 @@ app.layout = html.Div(children=[
             "backgroundColor": "#fff",
             "borderRadius": "4.2px",
             "boxShadow": "0px 3px 10px -2px rgba(0, 0, 0, 0.2)",
-            }),
+            }, className="plot_container"),
     ]),
 
     # ----- ANALISIS ESTATICO EN X -----
@@ -650,6 +650,7 @@ app.layout = html.Div(children=[
                     )
                 ]),
             ]),
+
             html.Div( children=[
                 html.H2("PLOTEO DE DEFORMACIÓN X", style={
                     "fontSize": "20px",
@@ -665,7 +666,7 @@ app.layout = html.Div(children=[
                 }),
 
                 html.Div(children=[
-                    dcc.Graph(id='deformacion-x', className="plot",style={"height": "800px", "width": "800px"})
+                    dcc.Graph(id='deformacion-x', className="plot",style={"height": "80vh", "width": "80vh"})
 
                 ]),
             ]),
@@ -681,7 +682,7 @@ app.layout = html.Div(children=[
             "backgroundColor": "#fff",
             "borderRadius": "4.2px",
             "boxShadow": "0px 3px 10px -2px rgba(0, 0, 0, 0.2)",
-        }),
+        }, className="plot_container"),
     ]),
 
     # ----- ANALISIS ESTATICO EN Y -----
@@ -744,7 +745,7 @@ app.layout = html.Div(children=[
                 }),
                 
                 html.Div(children=[
-                    dcc.Graph(id='deformacion-y', className="plot",style={"height": "800px", "width": "800px"})
+                    dcc.Graph(id='deformacion-y', className="plot",style={"height": "80vh", "width": "80vh"})
 
                 ]),
                 
@@ -760,7 +761,7 @@ app.layout = html.Div(children=[
             "backgroundColor": "#fff",
             "borderRadius": "4.2px",
             "boxShadow": "0px 3px 10px -2px rgba(0, 0, 0, 0.2)",
-        }),
+        }, className="plot_container"),
 
     ]),
 
@@ -858,7 +859,7 @@ app.layout = html.Div(children=[
                             }
                         )
                     ]),
-                ], style={"marginRight": "75px"}),
+                ], className="table_analisis_dinamico"),
 
                 html.Div( children=[
                     html.H2("COMPARACIÓN", style={
@@ -875,15 +876,14 @@ app.layout = html.Div(children=[
                     html.Div(children=[
                         html.P(id="texto-descriptivo")
 
-                    ], style={"width": "500px", "textAlign": "justify"}),
-                ], style={"marginLeft": "75px",}),
+                    ]),
+                ], className="texto_comparacion",),
 
             ], style={
                 "display": "flex",
                 "justifyContent": "center",
                 "alignContent": "center",
-                "flexDirection": "row",
-            }), 
+            }, className="plot_container"), 
 
             html.Div(children=[
 
@@ -929,7 +929,7 @@ app.layout = html.Div(children=[
                         "marginbottom": "0px"
                     }),
                     html.Div(children=[
-                        dcc.Graph(id='plot-distorciones', className="plot",style={"height": "600px", "width": "800px"})
+                        dcc.Graph(id='plot-distorciones', className="plot",style={"height": "80vh", "width": "80vh"})
 
                     ]),
                 ]),
@@ -938,7 +938,7 @@ app.layout = html.Div(children=[
                 "display": "flex",
                 "textAlign": "center",
                 "alignItems": "center"
-            }),
+            }, className="plot_container"),
 
 
         ], style={
