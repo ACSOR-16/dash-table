@@ -1,14 +1,17 @@
 import numpy as np
 import pandas as pd
 import openseespy.opensees as ope
-# import openseespyvis.Get_Rendering as opsplt
-import openseespy.postprocessing.ops_vis as opsv
-import openseespy.postprocessing.Get_Rendering as opsplt
-# import opsvis as opsv
+import openseespyvis.Get_Rendering as opsplt
+import opsvis as opsv
+#import openseespy.postprocessing.ops_vis as opsv
+#import openseespy.postprocessing.Get_Rendering as opsplt
 import matplotlib.pyplot as plt
 from dash import Dash, dash_table, dcc, html, Input, Output, State, callback
 from numpy import zeros
 from PIL import Image, ImageChops
+
+import math
+from decimal import Decimal as D
 
 # ---- SISTEMA DE UNIDADES ----
 # Unidades Base
@@ -27,25 +30,17 @@ g = 9.80665*m/s**2
 
 # ---- PROPIEDADES DEL MATERIAL Y DE SECCIONES ----
 fc = 210*kg/cm**2
+ρ = 2400*kg/m**3
 E = 151*fc**0.5*kgf/cm**2
 G = 0.5*E/(1+0.2)
-# Viga
-b,h = 30*cm, 60*cm
-Av = b*h
-Izv = b*h**3/12
-Iyv = b**3*h/12
-aa, bb = max(b,h),min(b,h)
-β= 1/3-0.21*bb/aa*(1-(bb/aa)**4/12)
-Jxxv = β*bb**3*aa
-# Columna
-a = 60*cm
-Ac = a**2
-Izc = a**4/12
-Iyc = a**4/12
-β= 1/3-0.21*1.*(1-(1.)**4/12)
-Jxxc = β*a**4
-# Densidad del concreto
-ρ = 2400*kg/m**3
+
+# Aplicando Cargas vivas y muertas
+wLive = 200*kg/m**2     
+wLosa = 360*kg/m**2 
+wAcab = 100*kg/m**2
+wTabi = 100*kg/m**2
+wTotal = 1.0*(wLosa+wAcab+wTabi)+0.25*wLive
+
 
 def trim(im):
     bg = Image.new(im.mode, im.size, im.getpixel((0,0)))
@@ -54,10 +49,114 @@ def trim(im):
     bbox = diff.getbbox()
     if bbox:
         return im.crop(bbox)
+    
+
+def Predimencionamiento_1(df_x, df_y, df_z):
+    """ Definición de Grillas, se eliminará al juntar con código matriz """
+    #df_x = pd.DataFrame({'Grid':[1,2,3,4,5,6], 'Espaciado':[5.5,5.5,3,5.5,5.5,0]})
+    #df_y = pd.DataFrame({'Grid':['A','B','C','D','E','F','G'], 'Espaciado':[3,6,6,6,6,3,0]})
+    #df_z = pd.DataFrame({'Nivel':[0,1,2,3,4,5,6], 'Altura':[2.8,2.8,2.8,2.8,2.8,2.8,0]})
+
+    """ Luces máximas en eje X e Y """
+    Lmax_x = df_x['Espaciado'].max()
+    Lmax_y = df_y['Espaciado'].max()
+    L_max = max(Lmax_x, Lmax_y)
+
+    """ PREDIMENSIONAMIENTO DE Peraltes de Vigas en eje X e Y en 'metros'"""
+    h_x_p = Lmax_x/10
+    h_y_p = Lmax_y/10
+    h_x = float(round(math.ceil(D(str(h_x_p)) / D(str(0.05))) * D(str(0.05)), 2))
+    h_y = float(round(math.ceil(D(str(h_y_p)) / D(str(0.05))) * D(str(0.05)), 2))
+
+    """ PREDIMENSIONAMIENTO DE Anchos de Vigas en eje X e Y en 'metros' """
+    b_y = float(round(math.floor(D(str(h_y))/D(str(2))/D(str(0.05)))*D(str(0.05)),2))
+    b_x = float(round(math.floor(D(str(h_x))/D(str(2))/D(str(0.05)))*D(str(0.05)),2))
+
+    """ VIGA A CONSIDERA R"""
+    b = max(b_x,b_y)
+    h = max(h_x,h_y)
+
+
+    """ Definiendo sumas entre distancias de Grillas """
+    df_x['suma'] = df_x['Espaciado'].rolling(2).sum()
+    df_y['suma'] = df_y['Espaciado'].rolling(2).sum()
+
+    """ Definiendo Ancho y Largo tributario mayor """
+    max_dim_x = df_x['suma'].max()
+    max_dim_y = df_y['suma'].max()
+    max_dim_x_2 = max_dim_x/2
+    max_dim_y_2 = max_dim_y/2
+
+    """ Ubicacion de Columna Central con mayor area tributaria """
+    max_grid_x = df_x['Grid'].iloc[df_x['suma'].idxmax()]
+    max_grid_y = df_y['Grid'].iloc[df_y['suma'].idxmax()]
+
+    """ Calculo de Area Tributaria de Columna Central """
+    max_Atributaria_cent = max_dim_x_2*max_dim_y_2
+
+    """ Calculo de Peso de Servicio """
+    a_col_i = 0.45
+    P_columnas = a_col_i**2*ρ*(df_z['Espaciado'].sum()-df_z['Espaciado'].iloc[0])
+    #print('PESO_COLUMNA',P_columnas)
+    P_viga_x = b*h*max_dim_x_2*ρ*float(df_z.shape[0]-1)
+    #print('PESOVIGA_X',P_viga_x)
+    P_viga_y = b*h*max_dim_y_2*ρ*float(df_z.shape[0]-1)
+    #print('PESOVIGA_Y',P_viga_y)
+    P_losa = max_Atributaria_cent*wLosa*float(df_z.shape[0]-1)
+    #print('PESO_LOSA',P_losa)
+    P_tabiqueria = max_Atributaria_cent*wTabi*float(df_z.shape[0]-2)
+    #print('PESO_TABIQ',P_tabiqueria)
+    P_acabados = max_Atributaria_cent*wAcab*float(df_z.shape[0]-1)
+    #print('PESO_ACAB',P_acabados)
+    P_azotea = max_Atributaria_cent*wAcab
+    #print('PESO_AZOTEA',P_azotea)
+    P_live = max_Atributaria_cent*wLive*float(df_z.shape[0]-2)
+    #print('PESO_LIVE',P_live)
+    P_servicio = P_losa+P_columnas+P_tabiqueria+P_acabados+P_azotea+P_live+P_viga_x+P_viga_y
+    #print(P_servicio)
+
+    """ PREDIMENSIONAMIENTO de Columna Central """
+    Area_col_c = float((D(str(P_servicio))/(D(str(0.45))*D(str(fc)))))
+    print(Area_col_c)
+    a = float(round(math.ceil(D(str(math.sqrt(Area_col_c)))/D(str(0.05)))*D(str(0.05)),2))
+
+    mini = max(L_max/12, 0.2)
+    if h < mini:
+        h = mini
+
+    b = h/2
+
+    if b < 0.20:
+        b = 0.2
+
+    if a < 0.25:
+        a = 0.25
+
+    return a, b, h, mini
+
+def Predimencionamiento_2(a, b, h):
+     # Viga
+    Av = b*h
+    Izv = b*h**3/12
+    Iyv = b**3*h/12
+    aa, bb = max(b,h),min(b,h)
+    βv= 1/3-0.21*bb/aa*(1-(bb/aa)**4/12)
+    Jxxv = βv*bb**3*aa
+    # Columna
+    Ac = a**2
+    Izc = a**4/12
+    Iyc = a**4/12
+    βc= 1/3-0.21*1.*(1-(1.)**4/12)
+    Jxxc = βc*a**4
+    
+    return Av,  Izv , Iyv, Jxxv, Ac, Izc, Iyc, Jxxc
+
 
 # ---- CREACION DEL MODELO ----
 def GeoModel(df_x, df_y, df_z):
-    ope.wipe()
+    ope.reset()  # This command is used to set the state of the domain to its original state.
+    ope.wipeAnalysis() # This command is used to destroy all components of the Analysis object.
+    ope.wipe() # This command is used to destroy all constructed objects.
     ope.model('basic', '-ndm', 3, '-ndf', 6)
 
     Lx = df_x["Espaciado"].sum()
@@ -128,7 +227,7 @@ def GeoModel(df_x, df_y, df_z):
 
 
 
-def ModelamientoNodos(Nodes, Elems, Diap):
+def ModelamientoNodos(Nodes, Elems, Diap, Ac, Jxxc, Iyc, Izc, Av, Jxxv, Iyv, Izv, a, b, h):
     
     RigidDiaphragm = 'ON'
     #  ----- CREANDO NODOS DEL MODELO ----
@@ -231,14 +330,8 @@ def GetStaticLoads(coef,p,h,T):
     return F,k
 
 
-def AsignacionMasasModosVibracion(Nodes, Elems, df_z):
+def AsignacionMasasModosVibracion(Nodes, Elems, df_z, df_sismico):
     # Aplicando Cargas vivas y muertas
-    wLive = 250*kg/m**2
-    wLosa = 300*kg/m**2
-    wAcab = 100*kg/m**2
-    wTabi = 150*kg/m**2
-    wTotal = 1.0*(wLosa+wAcab+wTabi)+0.25*wLive
-
     df_E = pd.DataFrame(Elems, columns = ['n_element', 'node_1', 'node_2', 'col_viga','espaciado'])
     
     for Ni in Nodes:
@@ -266,23 +359,11 @@ def AsignacionMasasModosVibracion(Nodes, Elems, df_z):
 
     # Obtenemos los modos
     Nmodes = 12
-
     # ploteamos el modos de vibracion
-    """
-    plt.figure()
     opsplt.plot_modeshape(1, 100)
-    plt.savefig('plots/vibracion_1.jpg')
-    plt.figure()
     opsplt.plot_modeshape(2, 100)
-    plt.savefig('plots/vibracion_2.jpg')
-    plt.figure()
     opsplt.plot_modeshape(3, 100)
-    plt.savefig('plots/vibracion_3.jpg')
-    """
     # Generacion de Tmodes 
-    opsplt.plot_modeshape(1, 100)
-    opsplt.plot_modeshape(2, 100)
-    opsplt.plot_modeshape(3, 100)
     vals = ope.eigen(Nmodes)
     #vals = ope.eigen('-fullGenLapack',Nmodes)
     Tmodes = np.zeros(len(vals))
@@ -313,19 +394,31 @@ def AsignacionMasasModosVibracion(Nodes, Elems, df_z):
     H = np.array([df_z['Espaciado'].iloc[:i+1].sum() for i in  range(df_z.shape[0]-1)])
     P = sum(MF[0::3,0::3])*9.80665 # Peso por nivel
     #print(H,P)
-    Ro = 8.
-    E030 = EspectroE030(Tmodes,Z=0.45,U=1.0,S=1.0,Tp=0.4,Tl=2.5,R=Ro)
+    Z = float(df_sismico[df_sismico['Factores']=='Factor de Zona']['Valores'])
+    U = float(df_sismico[df_sismico['Factores']=='Factor de Uso']['Valores'])
+    S = float(df_sismico[df_sismico['Factores']=='Factor de suelo']['Valores'])
+    Ro = float(df_sismico[df_sismico['Factores']=='Coef. Basico de Reducción']['Valores'])
+    Tp = float(df_sismico[df_sismico['Factores']=='Tp']['Valores'])
+    Tl = float(df_sismico[df_sismico['Factores']=='Tl']['Valores'])
+
+    E030 = EspectroE030(Tmodes,Z=Z,U=U,S=S,Tp=Tp,Tl=Tl,R=Ro)
     F, k = GetStaticLoads(E030[0],P,H,Tmodes[0])
     #print(E030[0],k)
     return Tmodes, MF, H, df_Tmodes
 
-def AnalisisEstaticoX(Tmodes, MF, H, df_x, df_y, df_z, Diap):
+def AnalisisEstaticoX(Tmodes, MF, H, df_x, df_y, df_z, Diap, df_sismico):
     np.set_printoptions(precision=3,linewidth=300,suppress=True)
     #H = np.arange(1,nz+1)*dz
     P = sum(MF[0::3,0::3])*9.80665 # Peso por nivel
     #print(H,P)
-    Ro = 8.
-    E030 = EspectroE030(Tmodes,Z=0.45,U=1.0,S=1.0,Tp=0.4,Tl=2.5,R=Ro)
+    Z = float(df_sismico[df_sismico['Factores']=='Factor de Zona']['Valores'])
+    U = float(df_sismico[df_sismico['Factores']=='Factor de Uso']['Valores'])
+    S = float(df_sismico[df_sismico['Factores']=='Factor de suelo']['Valores'])
+    Ro = float(df_sismico[df_sismico['Factores']=='Coef. Basico de Reducción']['Valores'])
+    Tp = float(df_sismico[df_sismico['Factores']=='Tp']['Valores'])
+    Tl = float(df_sismico[df_sismico['Factores']=='Tl']['Valores'])
+
+    E030 = EspectroE030(Tmodes,Z=Z,U=U,S=S,Tp=Tp,Tl=Tl,R=Ro)
     F, k = GetStaticLoads(E030[0],P,H,Tmodes[0])
     CR = E030[0]/(0.45*1.*1.)
     #print('C/R=',CR)
@@ -471,7 +564,7 @@ def MasasEfectivas(df_z, MF, Tmodes):
         df2_m = pd.DataFrame({'Modo':[j], 'T(s)':[Tmodes[j-1]],'SumUx':[SUMx],'SumUy':[SUMy],'SumRz':[SUMr]})
         df1_m = pd.concat([df1_m, df2_m])
     # df1_m = df1_m.round(4)
-    print('N° mínimo de Modos a considerar:',ni)
+    #print('N° mínimo de Modos a considerar:',ni)
 
     return ni, modo, Ux, Uy, Rz, df1_m
 
@@ -566,10 +659,10 @@ def AnalisisDinamicoModalEspectral(E030,MF,modo,Tmodes,nz,ni, Ux, Uy, Rz, VS, df
     texto1 = texto1 + '\nEn la dirección Y, la cortante basal obtenida en el análisis \n\
     dinámico es %.2f kN y el 80%% de la cortante basal del análisis estático es %.2f kN. \n\
     Por lo que %s.'%(VDy[0::3][0]/1000,0.80*VS[0]/1000,msjy)
-    print(texto1)
+    #print(texto1)
 
     # Se aplican los Factores de Escala
-    print('\nANÁLISIS DINÁMICO FINAL')
+    #print('\nANÁLISIS DINÁMICO FINAL')
     Ro = 8.
     df_d1 = pd.DataFrame({'Nivel':[],'Vx(kN)':[],'Vy(kN)':[],'Ux(cm)':[],'Uy(cm)':[],'Δx(‰)':[],'Δy(‰)':[]})
     for i in range(nz):
@@ -602,4 +695,28 @@ def AnalisisDinamicoModalEspectral(E030,MF,modo,Tmodes,nz,ni, Ux, Uy, Rz, VS, df
     im = trim(im)
     im.save("plots/distorsion_din.jpg")
 
-    return df4, texto1, df5
+    import plotly.graph_objects as go
+    fig_dist = go.Figure()
+
+    f_vecX = [0] + list(vecX)
+    f_vecY = [0] + list(vecY)
+    y = [i for i in range(len(f_vecY))]
+    # Add traces
+    fig_dist.add_trace(go.Scatter(x=f_vecX, y=y, text=f_vecX,
+                        mode='lines+markers',
+                        name='drift X'))
+    fig_dist.add_trace(go.Scatter(x=f_vecY, y=y, text=f_vecY,
+                        mode='lines+markers',
+                        line = dict(shape = 'linear',dash = 'dash'),
+                        connectgaps = True,
+                        name='drift Y'))
+    fig_dist.update_xaxes(title_text = "Distorsión (‰)")
+    fig_dist.update_yaxes(title_text = "Nivel")
+    fig_dist.update_layout(legend=dict(
+                                        orientation="h",
+                                        yanchor="bottom",
+                                        y=1.02,
+                                        xanchor="right",
+                                        x=1))
+
+    return df4, texto1, df5, fig_dist, max(f_vecX+f_vecY)

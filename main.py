@@ -2,11 +2,11 @@ import numpy as np
 import pandas as pd
 import plotly.express as px
 from PIL import Image
-# import openseespy.opensees as ope
-# import openseespyvis.Get_Rendering as opsplt
-# import opsvis as opsv
-import openseespy.postprocessing.ops_vis as opsv
-import openseespy.postprocessing.Get_Rendering as opsplt
+import openseespy.opensees as ope
+import openseespyvis.Get_Rendering as opsplt
+import opsvis as opsv
+#import openseespy.postprocessing.ops_vis as opsv
+#import openseespy.postprocessing.Get_Rendering as opsplt
 import matplotlib.pyplot as plt
 from dash import Dash, dash_table, dcc, html, Input, Output, State, callback
 from numpy import zeros
@@ -51,7 +51,7 @@ app.layout = html.Div(children=[
                 ]),
                 
                 dash_table.DataTable(
-                    id='Análisis-sismico-dinamico',
+                    id='Analisis-sismico-dinamico',
                     columns=[{
                         'name': i,
                         'id': i,
@@ -59,12 +59,12 @@ app.layout = html.Div(children=[
                         'renamable': False
                     } for i in ['Factores', 'Valores']],
                     data=[
-                        {'Factores':'Factor de Zona', 'Valores':1},
-                        {'Factores':'Factor de Uso', 'Valores':0.45},
+                        {'Factores':'Factor de Zona', 'Valores':0.45},
+                        {'Factores':'Factor de Uso', 'Valores':1},
                         {'Factores':'Factor de suelo', 'Valores':1},
                         {'Factores':'Coef. Basico de Reducción', 'Valores':8},
                         {'Factores':'Tp', 'Valores':0.4},
-                        {'Factores':'TI', 'Valores':2.5},
+                        {'Factores':'Tl', 'Valores':2.5},
                     ],
                     editable=True,
                     row_deletable=False,
@@ -145,7 +145,7 @@ app.layout = html.Div(children=[
             html.Div(children=[
                 
                 html.Div(children=[
-                    html.H2("Datos de cuadricula X", style={
+                    html.H2("Datos de cuadrícula X", style={
                         "fontSize": "20px",
                         "fontWeight": "700",
                         "letterSpacing": "0",
@@ -229,7 +229,7 @@ app.layout = html.Div(children=[
             html.Div(children=[
                 
                 html.Div(children=[
-                    html.H2("Datos de cuadricula Y", style={
+                    html.H2("Datos de cuadrícula Y", style={
                         "fontSize": "20px",
                         "fontWeight": "700",
                         "letterSpacing": "0",
@@ -518,7 +518,7 @@ app.layout = html.Div(children=[
 
     # ------ ASIGNACION DE MASAS Y MODOS DE VIBRACION -----
     html.Div(children=[
-        html.H2("ASIGNACION DE MASAS Y MODOS DE VIBRACION", style={
+        html.H2("ASIGNACIÓN DE MASAS Y MODOS DE VIBRACIÓN", style={
             "fontSize": "20px",
             "fontWeight": "700",
             "letterSpacing": "0",
@@ -607,7 +607,7 @@ app.layout = html.Div(children=[
     # ----- ANALISIS ESTATICO EN X -----
     html.Div(children=[
 
-        html.H2("ANALISIS ESTATICO EN X", style={
+        html.H2("ANÁLISIS ESTÁTICO EN X", style={
             "fontSize": "20px",
             "fontWeight": "700",
             "letterSpacing": "0",
@@ -687,7 +687,7 @@ app.layout = html.Div(children=[
     # ----- ANALISIS ESTATICO EN Y -----
     html.Div(children=[
 
-        html.H2("ANALISIS ESTATICO EN Y", style={
+        html.H2("ANÁLISIS ESTÁTICO EN Y", style={
             "fontSize": "20px",
             "fontWeight": "700",
             "letterSpacing": "0",
@@ -814,7 +814,7 @@ app.layout = html.Div(children=[
     # ----- ANALISIS DINAMICO MODAL ESPECTRAL -----
     html.Div(children=[
 
-        html.H2("ANALISIS DINAMICO MODAL ESPECTRAL", style={
+        html.H2("ANÁLISIS DINÁMICO MODAL ESPECTRAL", style={
             "fontSize": "20px",
             "fontWeight": "700",
             "letterSpacing": "0",
@@ -1019,34 +1019,76 @@ def add_row(n_clicks, rows, columns):
     State('tabla-cuadricula-x', 'data'),
     State('tabla-cuadricula-y', 'data'),
     State('tabla-cuadricula-z', 'data'),
+    State('Analisis-sismico-dinamico', 'data'),
     prevent_initial_call=True)
-def save_data(n_clicks, data_x, data_y, data_z):
+def save_data(n_clicks, data_x, data_y, data_z, data_sismico):
     df_x = pd.DataFrame(data_x).astype(float)
     df_y = pd.DataFrame(data_y).astype(float)
     df_z = pd.DataFrame(data_z).astype(float)
+    df_sismico = pd.DataFrame(data_sismico)
+    df_sismico['Valores'] = df_sismico['Valores'].astype(float)
     df_z.columns = ["Grid", "Espaciado"]
+    
+    # Predimencionamieno 1
+    a, b, h, mini  = func.Predimencionamiento_1(df_x, df_y, df_z)
 
-    # Generamos la malla
-    Nodes, Elems, Diap = func.GeoModel(df_x, df_y, df_z)
-   
-    # Creacion de nodos y volumen
-    func.ModelamientoNodos(Nodes, Elems, Diap)
+    while 1:
+        # Predimencionamieno 2
+        Av,  Izv , Iyv, Jxxv, Ac, Izc, Iyc, Jxxc = func.Predimencionamiento_2(a, b, h)
 
-    # Asignacion de masas y modos de vibracion
-    Tmodes, MF, H, df_Tmodes= func.AsignacionMasasModosVibracion(Nodes, Elems, df_z)
+        # Generamos la malla
+        Nodes, Elems, Diap = func.GeoModel(df_x, df_y, df_z)
+    
+        # Creacion de nodos y volumen
+        func.ModelamientoNodos(Nodes, Elems, Diap, Ac, Jxxc, Iyc, Izc, Av, Jxxv, Iyv, Izv, a, b, h)
 
-    # Analisis estatico en X
-    F, E030, df_estatico_x = func.AnalisisEstaticoX(Tmodes, MF, H, df_x, df_y, df_z, Diap)
+        # Asignacion de masas y modos de vibracion
+        Tmodes, MF, H, df_Tmodes= func.AsignacionMasasModosVibracion(Nodes, Elems, df_z, df_sismico)
 
-    # Analisis estatico en Y
-    VS, df_estatico_y = func.AnalisisEstaticoY(Tmodes, MF, H,F, df_x, df_y, df_z, Diap)
+        # Analisis estatico en X
+        F, E030, df_estatico_x = func.AnalisisEstaticoX(Tmodes, MF, H, df_x, df_y, df_z, Diap, df_sismico)
 
-    # Masas efectivas
-    ni, modo, Ux, Uy, Rz, df_masas_efectivas = func.MasasEfectivas(df_z, MF, Tmodes)
+        # Analisis estatico en Y
+        VS, df_estatico_y = func.AnalisisEstaticoY(Tmodes, MF, H,F, df_x, df_y, df_z, Diap)
 
-    # Analisis dinamico modal espectral
-    nz = df_z.shape[0] - 1
-    analisis_escalar, texto_generado, analisis_final = func.AnalisisDinamicoModalEspectral(E030,MF,modo,Tmodes,nz,ni, Ux, Uy, Rz, VS, df_z)
+        # Masas efectivas
+        ni, modo, Ux, Uy, Rz, df_masas_efectivas = func.MasasEfectivas(df_z, MF, Tmodes)
+
+        # Analisis dinamico modal espectral
+        nz = df_z.shape[0] - 1
+        analisis_escalar, texto_generado, analisis_final, fig_dist, max_dist = func.AnalisisDinamicoModalEspectral(E030,MF,modo,Tmodes,nz,ni, Ux, Uy, Rz, VS, df_z)
+        
+        print(f'a:{a}, b:{b}, h:{h}')
+        print("Max dist:", max_dist)
+
+        var = 0.01
+
+        if max_dist >= 6.5 and max_dist <= 7:
+            break
+        elif max_dist > 7:
+
+            h += var
+            
+            b = h/2
+            if b < 0.20:
+                b = 0.2
+
+            a += var
+            
+        else:
+        
+            if h > mini:
+                h -= var
+        
+            b = h/2
+
+            if b < 0.20:
+                b = 0.2
+
+            if a > 0.25:
+                a -= var
+
+
 
     # ------ PLOTEO DEL MODELO -----
     # ----- PLOT GRILLAS -----
@@ -1093,8 +1135,6 @@ def save_data(n_clicks, data_x, data_y, data_z):
     # ----- ANALISIS DINAMICO MODAL ESPECTRAL -----
     dataframe_escalar = analisis_escalar.to_dict("records")
 
-    texto_generado
-
     dataframe_final = analisis_final.to_dict("records")
 
     img_distorciones = Image.open("plots/distorsion_din.jpg")
@@ -1104,7 +1144,7 @@ def save_data(n_clicks, data_x, data_y, data_z):
     fig_distorciones.update_yaxes(showticklabels=False)
 
 
-    return fig_grillas, fig_volumen, dataframe_Tmodes, dataframe_masas, dataframe_estatico_x, fig_estatico_x, dataframe_estatico_y, fig_estatico_y, dataframe_masas_efectivas,dataframe_escalar, texto_generado, dataframe_final, fig_distorciones
+    return fig_grillas, fig_volumen, dataframe_Tmodes, dataframe_masas, dataframe_estatico_x, fig_estatico_x, dataframe_estatico_y, fig_estatico_y, dataframe_masas_efectivas,dataframe_escalar, texto_generado, dataframe_final, fig_dist
 
 
 if __name__ == '__main__':
