@@ -1,10 +1,10 @@
 import numpy as np
 import pandas as pd
 import openseespy.opensees as ope
-# import openseespyvis.Get_Rendering as opsplt
-# import opsvis as opsv
-import openseespy.postprocessing.ops_vis as opsv
-import openseespy.postprocessing.Get_Rendering as opsplt
+import openseespyvis.Get_Rendering as opsplt
+import opsvis as opsv
+#import openseespy.postprocessing.ops_vis as opsv
+#import openseespy.postprocessing.Get_Rendering as opsplt
 import matplotlib.pyplot as plt
 from dash import Dash, dash_table, dcc, html, Input, Output, State, callback
 from numpy import zeros
@@ -727,3 +727,58 @@ def AnalisisDinamicoModalEspectral(E030,MF,modo,Tmodes,nz,ni, Ux, Uy, Rz, VS, df
                                         x=1))
 
     return df4, texto1, df5, fig_dist, max(f_vecX+f_vecY)
+
+def VigaColFinal(a, b, h, df_z, df_x):
+    import plotly.graph_objects as go
+
+    #  columna
+    ha = df_z['Espaciado'].sum()
+    fig_columna = go.Figure()
+    fig_columna.add_traces(go.Mesh3d(
+            name = "a: "+str(a),
+            x=[0, a, a, 0, 0, a, a, 0],
+            y=[0, 0, a, a, 0, 0, a, a],
+            z=[0, 0, 0, 0, ha, ha, ha, ha],
+            flatshading=True,
+            color='#2b4675',
+            # i, j and k give the vertices of triangles
+            i = [7, 0, 0, 0, 4, 4, 6, 6, 4, 0, 3, 2],
+            j = [3, 4, 1, 2, 5, 6, 5, 2, 0, 1, 6, 3],
+            k = [0, 7, 2, 3, 6, 7, 1, 1, 5, 5, 7, 6],))
+
+
+    fig_columna.add_traces(go.Mesh3d(
+            x=[a+1.2, -1.2-a],
+            y=[a+1.2, -1.2-a],
+            z=[ha+1.5, ha+1.5],
+        
+        ))
+    
+    # Viga
+    ab = df_x['Espaciado'].sum()
+    fig_viga = go.Figure()
+
+    fig_viga.add_traces(go.Mesh3d(
+            name = "b: "+str(b)+"\n"+"h: "+str(h),
+            x=[0+a, ab+a, ab+a, 0+a, 0+a, ab+a, ab+a, 0+a],
+            y=[0,  0,  b, b, 0,  0,  b, b],
+            z=[0,  0,  0, 0, h,  h,  h, h],
+            flatshading=True,
+            color='#2b4675',
+            # i, j and k give the vertices of triangles
+            i = [7, 0, 0, 0, 4, 4, 6, 6, 4, 0, 3, 2],
+            j = [3, 4, 1, 2, 5, 6, 5, 2, 0, 1, 6, 3],
+            k = [0, 7, 2, 3, 6, 7, 1, 1, 5, 5, 7, 6],))
+
+    fig_viga.add_traces(go.Mesh3d(
+            x=[ab+a+0, -1],
+            y=[b+1, 0],
+            z=[h+1, 0],
+        
+        ))
+    
+    #fig_viga.update_layout(width=2500, height=600) 
+
+    return fig_columna, fig_viga
+
+

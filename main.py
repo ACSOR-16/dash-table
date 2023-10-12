@@ -2,9 +2,9 @@ import numpy as np
 import pandas as pd
 import plotly.express as px
 from PIL import Image
-# import openseespy.opensees as ope
-# import openseespyvis.Get_Rendering as opsplt
-# import opsvis as opsv
+import openseespy.opensees as ope
+import openseespyvis.Get_Rendering as opsplt
+import opsvis as opsv
 # import openseespy.postprocessing.ops_vis as opsv
 # import openseespy.postprocessing.Get_Rendering as opsplt
 import matplotlib.pyplot as plt
@@ -987,12 +987,12 @@ app.layout = html.Div(children=[
                         "marginBottom": "0px"
                     }),
                     html.Div(children=[
-                        # dcc.Graph(id='vigas', className="plot",style={"height": "80vh", "width": "80vh"})# PLOT DE VIGA
+                        dcc.Graph(id='vigas', className="plot",style={"height": "80vh", "width": "80vh"})# PLOT DE VIGA
                     ]),
                 ]),
                 
                 html.Div( children=[
-                    html.H2("DIMENSIONES", style={
+                    html.H2(" DIMENSIONES", style={
                         "fontSize": "20px",
                         "fontWeight": "700",
                         "letterSpacing": "0",
@@ -1006,7 +1006,7 @@ app.layout = html.Div(children=[
                     
                     html.Div(children=[
                         html.Div(children=[
-                            html.P("Base (b)", style={
+                            html.P("b: ", style={
                                 "fontSize": "16px",
                                 "fontWeight": "700",
                                 "letterSpacing": "0",
@@ -1025,7 +1025,7 @@ app.layout = html.Div(children=[
                         }),
 
                         html.Div(children=[
-                            html.P("Altura (h)", style={
+                            html.P("h: ", style={
                                 "fontSize": "16px",
                                 "fontWeight": "700",
                                 "letterSpacing": "0",
@@ -1065,12 +1065,12 @@ app.layout = html.Div(children=[
                         "marginBottom": "0px"
                     }),
                     html.Div(children=[
-                        # dcc.Graph(id='columnas', className="plot",style={"height": "80vh", "width": "80vh"})# PLOT DE COLUMNAS
+                        dcc.Graph(id='columnas', className="plot",style={"height": "80vh", "width": "80vh"})# PLOT DE COLUMNAS
                       
                     ]),
                 ]),
                html.Div( children=[
-                    html.H2("DIMENSIONES", style={
+                    html.H2(" DIMENSIONES", style={
                         "fontSize": "20px",
                         "fontWeight": "700",
                         "letterSpacing": "0",
@@ -1082,7 +1082,7 @@ app.layout = html.Div(children=[
                     }),
                     html.Div(children=[
                         html.Div(children=[
-                            html.P("Area (a)", style={
+                            html.P("a: ", style={
                                 "fontSize": "16px",
                                 "fontWeight": "700",
                                 "letterSpacing": "0",
@@ -1179,11 +1179,12 @@ def add_row(n_clicks, rows, columns):
     Output('analisis_final', 'data'),
     Output('plot-distorciones', 'figure'),
 
-    # Output('vigas', 'figure'),
+    
     Output('base', 'children'),
     Output('altura', 'children'),
-    # # Output('columnas', 'figure'),
     Output('area_1', 'children'),
+    Output('columnas', 'figure'),
+    Output('vigas', 'figure'),
 
 
     # Output('plot-modelo-volumen', 'figure'),
@@ -1261,7 +1262,6 @@ def save_data(n_clicks, data_x, data_y, data_z, data_sismico):
                 a -= var
 
     h = round(h,2)
-
     # ------ PLOTEO DEL MODELO -----
     # ----- PLOT GRILLAS -----
     img_modelo_grillas = Image.open('plots/modelo_grillas.jpg')
@@ -1316,8 +1316,10 @@ def save_data(n_clicks, data_x, data_y, data_z, data_sismico):
     fig_distorciones.update_xaxes(showticklabels=False)
     fig_distorciones.update_yaxes(showticklabels=False)
 
+    fig_columna, fig_viga = func.VigaColFinal(a, b, h, df_z, df_x)
 
-    return fig_grillas, fig_volumen, dataframe_Tmodes, dataframe_masas, dataframe_estatico_x, fig_estatico_x, dataframe_estatico_y, fig_estatico_y, dataframe_masas_efectivas,dataframe_escalar, texto_generado, dataframe_final, fig_dist, b, h, a #afig_columna fig_viga
+
+    return fig_grillas, fig_volumen, dataframe_Tmodes, dataframe_masas, dataframe_estatico_x, fig_estatico_x, dataframe_estatico_y, fig_estatico_y, dataframe_masas_efectivas,dataframe_escalar, texto_generado, dataframe_final, fig_dist, b, h, a, fig_columna, fig_viga
 
 
 if __name__ == '__main__':
