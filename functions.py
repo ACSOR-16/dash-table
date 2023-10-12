@@ -371,7 +371,7 @@ def AsignacionMasasModosVibracion(Nodes, Elems, df_z, df_sismico):
         Tmodes[i] = 2*np.pi/vals[i]**0.5
         
     df_Tmodes = pd.DataFrame({'n_mode':[i+1 for i in range(len(Tmodes))], 'Tmode':Tmodes})
-
+    df_Tmodes = df_Tmodes.round(4)
     # Realizamos un análisis para obtener la matriz de Masas
     ope.wipeAnalysis()
     ope.system('FullGeneral')
@@ -467,6 +467,9 @@ def AnalisisEstaticoX(Tmodes, MF, H, df_x, df_y, df_z, Diap, df_sismico):
     im = Image.open("plots/deformacion_x.jpg")
     im = trim(im)
     im.save("plots/deformacion_x.jpg")
+
+    df1_x = df1_x.round(4)
+
     return F, E030, df1_x
     
 
@@ -517,6 +520,9 @@ def AnalisisEstaticoY(Tmodes, MF, H,F, df_x, df_y, df_z, Diap):
     im = Image.open("plots/deformacion_y.jpg")
     im = trim(im)
     im.save("plots/deformacion_y.jpg")
+
+    df1_y = df1_y.round(4)
+
     return VS, df1_y
 
 
@@ -563,7 +569,8 @@ def MasasEfectivas(df_z, MF, Tmodes):
             ni = j
         df2_m = pd.DataFrame({'Modo':[j], 'T(s)':[Tmodes[j-1]],'SumUx':[SUMx],'SumUy':[SUMy],'SumRz':[SUMr]})
         df1_m = pd.concat([df1_m, df2_m])
-    # df1_m = df1_m.round(4)
+    
+    df1_m = df1_m.round(6)
     #print('N° mínimo de Modos a considerar:',ni)
 
     return ni, modo, Ux, Uy, Rz, df1_m
