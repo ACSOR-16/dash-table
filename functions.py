@@ -1,10 +1,10 @@
 import numpy as np
 import pandas as pd
 import openseespy.opensees as ope
-import openseespyvis.Get_Rendering as opsplt
-import opsvis as opsv
-#import openseespy.postprocessing.ops_vis as opsv
-#import openseespy.postprocessing.Get_Rendering as opsplt
+# import openseespyvis.Get_Rendering as opsplt
+# import opsvis as opsv
+import openseespy.postprocessing.ops_vis as opsv
+import openseespy.postprocessing.Get_Rendering as opsplt
 import matplotlib.pyplot as plt
 from dash import Dash, dash_table, dcc, html, Input, Output, State, callback
 from numpy import zeros
@@ -123,6 +123,7 @@ def Predimencionamiento_1(df_x, df_y, df_z):
     mini = max(L_max/12, 0.2)
     if h < mini:
         h = mini
+        h = round(h, 2)
 
     b = h/2
 
@@ -771,7 +772,7 @@ def VigaColFinal(a, b, h, df_z, df_x):
             k = [0, 7, 2, 3, 6, 7, 1, 1, 5, 5, 7, 6],))
 
     fig_viga.add_traces(go.Mesh3d(
-            x=[ab+a+0, -1],
+            x=[ab+a+0, 0],
             y=[b+1, 0],
             z=[h+1, 0],
         

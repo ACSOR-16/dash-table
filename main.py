@@ -2,9 +2,9 @@ import numpy as np
 import pandas as pd
 import plotly.express as px
 from PIL import Image
-import openseespy.opensees as ope
-import openseespyvis.Get_Rendering as opsplt
-import opsvis as opsv
+# import openseespy.opensees as ope
+# import openseespyvis.Get_Rendering as opsplt
+# import opsvis as opsv
 # import openseespy.postprocessing.ops_vis as opsv
 # import openseespy.postprocessing.Get_Rendering as opsplt
 import matplotlib.pyplot as plt
@@ -929,7 +929,7 @@ app.layout = html.Div(children=[
                         "marginbottom": "0px"
                     }),
                     html.Div(children=[
-                        dcc.Graph(id='plot-distorciones', className="plot",style={"height": "80vh", "width": "80vh"})
+                        dcc.Graph(id='plot-distorciones', className="plot_distorciones",style={"height": "80vh", "width": "80vh"})
 
                     ]),
                 ]),
@@ -976,7 +976,7 @@ app.layout = html.Div(children=[
                 
                 html.Div( children=[
                     html.H2("VIGAS", style={
-                        "fontSize": "20px",
+                        "fontSize": "38px",
                         "fontWeight": "700",
                         "letterSpacing": "0",
                         "lineHeight": "1.5em",
@@ -993,7 +993,7 @@ app.layout = html.Div(children=[
                 
                 html.Div( children=[
                     html.H2(" DIMENSIONES", style={
-                        "fontSize": "20px",
+                        "fontSize": "38px",
                         "fontWeight": "700",
                         "letterSpacing": "0",
                         "lineHeight": "1.5em",
@@ -1007,7 +1007,7 @@ app.layout = html.Div(children=[
                     html.Div(children=[
                         html.Div(children=[
                             html.P("b: ", style={
-                                "fontSize": "16px",
+                                "fontSize": "34px",
                                 "fontWeight": "700",
                                 "letterSpacing": "0",
                                 "lineHeight": "1.5em",
@@ -1017,7 +1017,7 @@ app.layout = html.Div(children=[
                                 "marginbottom": "0px"
                             }),
                             
-                            html.P(id="base"),
+                            html.P(id="base", style={"fontSize": "30px",}),
                         ], style={
                             "display": "flex",
                             "justifyContent": "space-between",
@@ -1026,7 +1026,7 @@ app.layout = html.Div(children=[
 
                         html.Div(children=[
                             html.P("h: ", style={
-                                "fontSize": "16px",
+                                "fontSize": "34px",
                                 "fontWeight": "700",
                                 "letterSpacing": "0",
                                 "lineHeight": "1.5em",
@@ -1036,7 +1036,7 @@ app.layout = html.Div(children=[
                                 "marginbottom": "0px"
                             }),
                             
-                            html.P(id="altura"),
+                            html.P(id="altura", style={"fontSize": "30px",}),
                         ], style={
                             "display": "flex",
                             "justifyContent": "space-between",
@@ -1048,12 +1048,13 @@ app.layout = html.Div(children=[
                 "display": "flex",
                 "justifyContent": "center",
                 "alignContent": "center",
+                "alignItems": "center",
             }, className="plot_container"), 
             
             html.Div(children=[
                html.Div( children=[
                     html.H2("COLUMNAS", style={
-                        "fontSize": "20px",
+                        "fontSize": "38px",
                         "fontWeight": "700",
                         "letterSpacing": "0",
                         "lineHeight": "1.5em",
@@ -1071,7 +1072,7 @@ app.layout = html.Div(children=[
                 ]),
                html.Div( children=[
                     html.H2(" DIMENSIONES", style={
-                        "fontSize": "20px",
+                        "fontSize": "38px",
                         "fontWeight": "700",
                         "letterSpacing": "0",
                         "lineHeight": "1.5em",
@@ -1083,7 +1084,7 @@ app.layout = html.Div(children=[
                     html.Div(children=[
                         html.Div(children=[
                             html.P("a: ", style={
-                                "fontSize": "16px",
+                                "fontSize": "34px",
                                 "fontWeight": "700",
                                 "letterSpacing": "0",
                                 "lineHeight": "1.5em",
@@ -1093,7 +1094,7 @@ app.layout = html.Div(children=[
                                 "marginbottom": "0px"
                             }),
                             
-                            html.P(id="area_1"),
+                            html.P(id="area_1", style={"fontSize": "30px",}),
                         ], style={
                             "display": "flex",
                             "justifyContent": "space-between",
@@ -1260,8 +1261,8 @@ def save_data(n_clicks, data_x, data_y, data_z, data_sismico):
 
             if a > 0.25:
                 a -= var
+        # h = round(h,2)
 
-    h = round(h,2)
     # ------ PLOTEO DEL MODELO -----
     # ----- PLOT GRILLAS -----
     img_modelo_grillas = Image.open('plots/modelo_grillas.jpg')

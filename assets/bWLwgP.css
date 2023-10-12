@@ -21,6 +21,10 @@ body {
     margin-right: 75px;
 }
 
+.plot_distorciones {
+    margin-left: 50px;
+}
+
 @media (max-width: 1200px) {
    
     .plot_container {
@@ -47,5 +51,9 @@ body {
 
     .table_analisis_dinamico {
         margin-right: 0px;
+    }
+
+    .plot_distorciones {
+        margin-left: 0px;
     }
 }
