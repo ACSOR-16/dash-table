@@ -13,6 +13,8 @@ from numpy import zeros
 import warnings
 warnings.filterwarnings("ignore")
 import functions as func 
+from decimal import Decimal as D
+
 
 ##
 app = Dash(__name__)
@@ -970,143 +972,170 @@ app.layout = html.Div(children=[
             "paddingBottom": "0px",
             "marginBottom": "0px"
         }),
+
         html.Div(children=[
             
             html.Div(children=[
                 
+                html.H2("VIGAS", style={
+                    "fontSize": "25px",
+                    "fontWeight": "700",
+                    "letterSpacing": "0",
+                    "lineHeight": "1.5em",
+                    "position": "relative",
+                    "color": "#15294b",
+                    "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif",
+                    "paddingBottom": "0px",
+                    "marginBottom": "0px"
+                }),
+
                 html.Div( children=[
-                    html.H2("VIGAS", style={
-                        "fontSize": "38px",
-                        "fontWeight": "700",
-                        "letterSpacing": "0",
-                        "lineHeight": "1.5em",
-                        "position": "relative",
-                        "color": "#15294b",
-                        "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif",
-                        "paddingBottom": "0px",
-                        "marginBottom": "0px"
-                    }),
                     html.Div(children=[
                         dcc.Graph(id='vigas', className="plot",style={"height": "80vh", "width": "80vh"})# PLOT DE VIGA
                     ]),
-                ]),
-                
-                html.Div( children=[
-                    html.H2(" DIMENSIONES", style={
-                        "fontSize": "38px",
-                        "fontWeight": "700",
-                        "letterSpacing": "0",
-                        "lineHeight": "1.5em",
-                        "paddingBottom": "15px",
-                        "position": "relative",
-                        "color": "#15294b",
-                        "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif",
-                        "marginBottom": "0"
-                    }),
-                    
-                    html.Div(children=[
-                        html.Div(children=[
-                            html.P("b: ", style={
-                                "fontSize": "34px",
-                                "fontWeight": "700",
-                                "letterSpacing": "0",
-                                "lineHeight": "1.5em",
-                                "position": "relative",
-                                "color": "#15294b",
-                                "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif",
-                                "marginbottom": "0px"
-                            }),
-                            
-                            html.P(id="base", style={"fontSize": "30px",}),
-                        ], style={
-                            "display": "flex",
-                            "justifyContent": "space-between",
-                            "alignItems": "center",
-                        }),
 
+                    html.Div( children=[
+                        html.H2(" DIMENSIONES (b x h)", style={
+                            "fontSize": "20px",
+                            "fontWeight": "700",
+                            "letterSpacing": "0",
+                            "lineHeight": "1.5em",
+                            "paddingBottom": "15px",
+                            "position": "relative",
+                            "color": "#15294b",
+                            "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif",
+                            "marginBottom": "0"
+                        }),
+                        
                         html.Div(children=[
-                            html.P("h: ", style={
-                                "fontSize": "34px",
-                                "fontWeight": "700",
-                                "letterSpacing": "0",
-                                "lineHeight": "1.5em",
-                                "position": "relative",
-                                "color": "#15294b",
-                                "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif",
-                                "marginbottom": "0px"
+                            html.Div(children=[
+                                html.P("b: ", style={
+                                    "fontSize": "20px",
+                                    "fontWeight": "700",
+                                    "letterSpacing": "0",
+                                    "lineHeight": "1.5em",
+                                    "position": "relative",
+                                    "color": "#15294b",
+                                    "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif",
+                                    "marginbottom": "0px"
+                                }),
+                                
+                                html.P(id="base", style={"fontSize": "20px",}),
+                            ], style={
+                                "display": "flex",
+                                "justifyContent": "space-between",
+                                "alignItems": "center",
                             }),
-                            
-                            html.P(id="altura", style={"fontSize": "30px",}),
-                        ], style={
-                            "display": "flex",
-                            "justifyContent": "space-between",
-                            "alignItems": "center",
-                        }),                            
-                    ]),
-                ]),
+
+                            html.Div(children=[
+                                html.P("h: ", style={
+                                    "fontSize": "20px",
+                                    "fontWeight": "700",
+                                    "letterSpacing": "0",
+                                    "lineHeight": "1.5em",
+                                    "position": "relative",
+                                    "color": "#15294b",
+                                    "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif",
+                                    "marginbottom": "0px"
+                                }),
+                                
+                                html.P(id="altura", style={"fontSize": "20px",}),
+                            ], style={
+                                "display": "flex",
+                                "justifyContent": "space-between",
+                                "alignItems": "center",
+                            }),                            
+                        ]),
+                    ], style={
+                        "display": "flex",
+                        "justifyContent": "center",
+                        "textAlign": "center",
+                        "alignItems": "center"
+                    }),
+                ], style={
+                    "display": "flex",
+                    "justifyContent": "center",
+                    "textAlign": "center",
+                    "alignItems": "center"
+                }),
+                
+                
             ], style={
                 "display": "flex",
                 "justifyContent": "center",
                 "alignContent": "center",
                 "alignItems": "center",
+                "flexDirection": "column"
             }, className="plot_container"), 
             
             html.Div(children=[
-               html.Div( children=[
-                    html.H2("COLUMNAS", style={
-                        "fontSize": "38px",
-                        "fontWeight": "700",
-                        "letterSpacing": "0",
-                        "lineHeight": "1.5em",
-                        "paddingBottom": "15px",
-                        "position": "relative",
-                        "color": "#15294b",
-                        "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif",
-                        "paddingBottom": "0px",
-                        "marginBottom": "0px"
-                    }),
+
+                html.H2("COLUMNAS", style={
+                    "fontSize": "25px",
+                    "fontWeight": "700",
+                    "letterSpacing": "0",
+                    "lineHeight": "1.5em",
+                    "paddingBottom": "15px",
+                    "position": "relative",
+                    "color": "#15294b",
+                    "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif",
+                    "paddingBottom": "0px",
+                    "marginBottom": "0px"
+                }),
+
+                html.Div( children=[
+
                     html.Div(children=[
                         dcc.Graph(id='columnas', className="plot",style={"height": "80vh", "width": "80vh"})# PLOT DE COLUMNAS
                       
                     ]),
-                ]),
-               html.Div( children=[
-                    html.H2(" DIMENSIONES", style={
-                        "fontSize": "38px",
-                        "fontWeight": "700",
-                        "letterSpacing": "0",
-                        "lineHeight": "1.5em",
-                        "position": "relative",
-                        "color": "#15294b",
-                        "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif",
-                        "marginbottom": "0px"
-                    }),
-                    html.Div(children=[
-                        html.Div(children=[
-                            html.P("a: ", style={
-                                "fontSize": "34px",
-                                "fontWeight": "700",
-                                "letterSpacing": "0",
-                                "lineHeight": "1.5em",
-                                "position": "relative",
-                                "color": "#15294b",
-                                "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif",
-                                "marginbottom": "0px"
-                            }),
-                            
-                            html.P(id="area_1", style={"fontSize": "30px",}),
-                        ], style={
-                            "display": "flex",
-                            "justifyContent": "space-between",
-                            "alignItems": "center",
+
+                    html.Div( children=[
+                        html.H2(" DIMENSIONES (a x a)", style={
+                            "fontSize": "20px",
+                            "fontWeight": "700",
+                            "letterSpacing": "0",
+                            "lineHeight": "1.5em",
+                            "position": "relative",
+                            "color": "#15294b",
+                            "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif",
+                            "marginbottom": "0px"
                         }),
+                        html.Div(children=[
+                            html.Div(children=[
+                                html.P("a: ", style={
+                                    "fontSize": "20px",
+                                    "fontWeight": "700",
+                                    "letterSpacing": "0",
+                                    "lineHeight": "1.5em",
+                                    "position": "relative",
+                                    "color": "#15294b",
+                                    "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif",
+                                    "marginbottom": "0px"
+                                }),
+                                
+                                html.P(id="area_1", style={"fontSize": "20px",}),
+                            ], style={
+                                "display": "flex",
+                                "justifyContent": "space-between",
+                                "alignItems": "center",
+                            }),
+                        ]),
                     ]),
-                ]),
+                ], style={
+                    "display": "flex",
+                    "justifyContent": "center",
+                    "textAlign": "center",
+                    "alignItems": "center"
+                }),
             ], style={
                 "display": "flex",
+                "justifyContent": "center",
                 "textAlign": "center",
-                "alignItems": "center"
+                "alignItems": "center",
+                "flexDirection": "column"
             }, className="plot_container"),
+
         ], style={
             "display": "flex",
             "flexDirection": "column",
@@ -1204,9 +1233,12 @@ def save_data(n_clicks, data_x, data_y, data_z, data_sismico):
     df_z.columns = ["Grid", "Espaciado"]
     
     # Predimencionamieno 1
-    a, b, h, mini  = func.Predimencionamiento_1(df_x, df_y, df_z)
+    a, b, h, mini, L_max  = func.Predimencionamiento_1(df_x, df_y, df_z)
 
     while 1:
+        # a = 0.43000000000000005
+        # b = 0.315
+        # h = 0.63
         # Predimencionamieno 2
         Av,  Izv , Iyv, Jxxv, Ac, Izc, Iyc, Jxxc = func.Predimencionamiento_2(a, b, h)
 
@@ -1235,32 +1267,37 @@ def save_data(n_clicks, data_x, data_y, data_z, data_sismico):
         print(f'a:{a}, b:{b}, h:{h}')
         print("Max dist:", max_dist)
 
-        var = 0.01
+        var = D("0.01")
 
         if max_dist >= 6.5 and max_dist <= 7:
             break
         elif max_dist > 7:
 
-            h += var
+            h = D(str(h)) + var
             
-            b = h/2
+            b = h/D("2")
             if b < 0.20:
                 b = 0.2
 
-            a += var
+            a = D(str(a)) + var
             
         else:
         
             if h > mini:
-                h -= var
+                h = D(str(h)) - var
         
-            b = h/2
+            b = h/D("2")
 
             if b < 0.20:
                 b = 0.2
 
             if a > 0.25:
-                a -= var
+                a = D(str(a)) - var
+
+        a = float(a)
+        b = float(b)
+        h = float(h)
+
         # h = round(h,2)
 
     # ------ PLOTEO DEL MODELO -----
@@ -1317,7 +1354,7 @@ def save_data(n_clicks, data_x, data_y, data_z, data_sismico):
     fig_distorciones.update_xaxes(showticklabels=False)
     fig_distorciones.update_yaxes(showticklabels=False)
 
-    fig_columna, fig_viga = func.VigaColFinal(a, b, h, df_z, df_x)
+    fig_columna, fig_viga = func.VigaColFinal(a, b, h, df_z, df_x, L_max)
 
 
     return fig_grillas, fig_volumen, dataframe_Tmodes, dataframe_masas, dataframe_estatico_x, fig_estatico_x, dataframe_estatico_y, fig_estatico_y, dataframe_masas_efectivas,dataframe_escalar, texto_generado, dataframe_final, fig_dist, b, h, a, fig_columna, fig_viga

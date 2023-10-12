@@ -133,7 +133,7 @@ def Predimencionamiento_1(df_x, df_y, df_z):
     if a < 0.25:
         a = 0.25
 
-    return a, b, h, mini
+    return a, b, h, mini, L_max
 
 def Predimencionamiento_2(a, b, h):
      # Viga
@@ -729,11 +729,11 @@ def AnalisisDinamicoModalEspectral(E030,MF,modo,Tmodes,nz,ni, Ux, Uy, Rz, VS, df
 
     return df4, texto1, df5, fig_dist, max(f_vecX+f_vecY)
 
-def VigaColFinal(a, b, h, df_z, df_x):
+def VigaColFinal(a, b, h, df_z, df_x, L_max):
     import plotly.graph_objects as go
 
     #  columna
-    ha = df_z['Espaciado'].sum()
+    ha = df_z['Espaciado'].iloc[0]
     fig_columna = go.Figure()
     fig_columna.add_traces(go.Mesh3d(
             name = "a: "+str(a),
@@ -756,7 +756,7 @@ def VigaColFinal(a, b, h, df_z, df_x):
         ))
     
     # Viga
-    ab = df_x['Espaciado'].sum()
+    ab = L_max
     fig_viga = go.Figure()
 
     fig_viga.add_traces(go.Mesh3d(
