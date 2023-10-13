@@ -1420,4 +1420,4 @@ def update_metrics(n):
     return [html.Span(f'Dist: {max_dist}'),]
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run_server(debug=True)
