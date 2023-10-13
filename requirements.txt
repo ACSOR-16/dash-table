@@ -1,4 +1,8 @@
 dash==2.14.0
+dash[diskcache]
+dash[celery]
+diskcache
+celery
 dash-auth
 numpy
 pandas

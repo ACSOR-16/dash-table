@@ -18,7 +18,6 @@ from decimal import Decimal as D
 import warnings
 warnings.filterwarnings("ignore")
 
-
 # Own Development 
 import functions as func 
 
@@ -30,6 +29,23 @@ zero_auth = {}
 
 for i in range(dff.shape[0]):
     zero_auth[dff['user'].iloc[i]] = dff['password'].iloc[i]
+
+
+from dash import DiskcacheManager, CeleryManager
+import os
+
+if 'REDIS_URL' in os.environ:
+    # Use Redis & Celery if REDIS_URL set as an env variable
+    from celery import Celery
+    celery_app = Celery(__name__, broker=os.environ['REDIS_URL'], backend=os.environ['REDIS_URL'])
+    background_callback_manager = CeleryManager(celery_app)
+
+else:
+    # Diskcache for non-production apps when developing locally
+    import diskcache
+    cache = diskcache.Cache("./cache")
+    background_callback_manager = DiskcacheManager(cache)
+
 
 # Keep this out of source code repository - save in a file or a database
 VALID_USERNAME_PASSWORD_PAIRS = zero_auth
@@ -1259,6 +1275,8 @@ def add_row(n_clicks, rows, columns):
     State('tabla-cuadricula-y', 'data'),
     State('tabla-cuadricula-z', 'data'),
     State('Analisis-sismico-dinamico', 'data'),
+    background=True,
+    manager=background_callback_manager,
     prevent_initial_call=True)
 def save_data(n_clicks, data_x, data_y, data_z, data_sismico):
     df_x = pd.DataFrame(data_x).astype(float)
