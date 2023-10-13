@@ -24,12 +24,18 @@ import functions as func
 
 max_dist = ''
 
+# Autentification information
+dff = pd.read_csv('zero.csv')
+zero_auth = {}
+
+for i in range(dff.shape[0]):
+    zero_auth[dff['user'].iloc[i]] = dff['password'].iloc[i]
+
 # Keep this out of source code repository - save in a file or a database
-VALID_USERNAME_PASSWORD_PAIRS = {
-    'hello': 'world'
-}
+VALID_USERNAME_PASSWORD_PAIRS = zero_auth
 
 app = Dash(__name__)
+server = app.server
 
 auth = dash_auth.BasicAuth(
     app,
@@ -1079,14 +1085,15 @@ app.layout = html.Div(children=[
                         "display": "flex",
                         "justifyContent": "center",
                         "textAlign": "center",
-                        "alignItems": "center"
+                        "flexDirection": "column",
+                        "alignItems": "stretch",
                     }),
                 ], style={
                     "display": "flex",
                     "justifyContent": "center",
                     "textAlign": "center",
                     "alignItems": "center"
-                }),
+                }, className="plot_container"),
                 
                 
             ], style={
@@ -1156,7 +1163,7 @@ app.layout = html.Div(children=[
                     "justifyContent": "center",
                     "textAlign": "center",
                     "alignItems": "center"
-                }),
+                }, className="plot_container"),
             ], style={
                 "display": "flex",
                 "justifyContent": "center",

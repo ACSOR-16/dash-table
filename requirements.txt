@@ -1,0 +1,9 @@
+dash==2.14.0
+dash-auth
+numpy
+pandas
+plotly
+Pillow
+openseespy==3.3.0.0
+Decimal
+gunicorn

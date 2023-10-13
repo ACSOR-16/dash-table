@@ -1,10 +1,10 @@
 import numpy as np
 import pandas as pd
 import openseespy.opensees as ope
-import openseespyvis.Get_Rendering as opsplt
-import opsvis as opsv
-#import openseespy.postprocessing.ops_vis as opsv
-#import openseespy.postprocessing.Get_Rendering as opsplt
+# import openseespyvis.Get_Rendering as opsplt
+# import opsvis as opsv
+import openseespy.postprocessing.ops_vis as opsv
+import openseespy.postprocessing.Get_Rendering as opsplt
 import matplotlib.pyplot as plt
 from dash import Dash, dash_table, dcc, html, Input, Output, State, callback
 from numpy import zeros
