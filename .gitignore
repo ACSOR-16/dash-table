@@ -402,12 +402,7 @@ FodyWeavers.xsd
 
 ### Images ###
 # JPEG
-*.jpg
-*.jpeg
-*.jpe
-*.jif
-*.jfif
-*.jfi
+
 
 # JPEG 2000
 *.jp2
