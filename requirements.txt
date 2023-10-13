@@ -4,5 +4,6 @@ numpy
 pandas
 plotly
 Pillow
+matplotlib
 openseespy==3.3.0.0
 gunicorn
