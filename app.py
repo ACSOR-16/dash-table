@@ -1411,13 +1411,15 @@ def save_data(n_clicks, data_x, data_y, data_z, data_sismico):
 
     return fig_grillas, fig_volumen, dataframe_Tmodes, dataframe_masas, dataframe_estatico_x, fig_estatico_x, dataframe_estatico_y, fig_estatico_y, dataframe_masas_efectivas,dataframe_escalar, texto_generado, dataframe_final, fig_dist, bb, hh, aa, fig_columna, fig_viga
 
-
+"""
 @callback(Output('live-update-text', 'children'),
               Input('interval-component', 'n_intervals'))
 def update_metrics(n):
     global max_dist
 
     return [html.Span(f'Dist: {max_dist}'),]
+"""
+    
 
 if __name__ == '__main__':
     app.run_server(debug=True)
