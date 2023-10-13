@@ -1,5 +1,3 @@
-import os
-os.environ['PYTHON_VERSION'] = '3.10.12'
 import numpy as np
 from numpy import zeros
 import pandas as pd
