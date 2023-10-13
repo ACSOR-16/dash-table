@@ -1,27 +1,41 @@
 import numpy as np
+from numpy import zeros
 import pandas as pd
+import matplotlib.pyplot as plt
 import plotly.express as px
+from dash import Dash, dash_table, dcc, html, Input, Output, State, callback
+import dash_auth
 from PIL import Image
+import math
+from decimal import Decimal as D
+
 # import openseespy.opensees as ope
 # import openseespyvis.Get_Rendering as opsplt
 # import opsvis as opsv
 # import openseespy.postprocessing.ops_vis as opsv
 # import openseespy.postprocessing.Get_Rendering as opsplt
-import matplotlib.pyplot as plt
-from dash import Dash, dash_table, dcc, html, Input, Output, State, callback
-from numpy import zeros
+
 import warnings
 warnings.filterwarnings("ignore")
-import math
-from decimal import Decimal as D
+
 
 # Own Development 
 import functions as func 
 
 max_dist = ''
 
+# Keep this out of source code repository - save in a file or a database
+VALID_USERNAME_PASSWORD_PAIRS = {
+    'hello': 'world'
+}
+
 app = Dash(__name__)
-#app.css.append_css({'/bWLwgP.css'})
+
+auth = dash_auth.BasicAuth(
+    app,
+    VALID_USERNAME_PASSWORD_PAIRS
+)
+
 # Análisis Sísmico Estático y Dinámico Modal Espectral
 app.layout = html.Div(children=[
     html.H2("Análisis Sísmico Estático y Dinámico Modal Espectral", style={
