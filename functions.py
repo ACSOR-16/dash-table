@@ -1,10 +1,10 @@
 import numpy as np
 import pandas as pd
 import openseespy.opensees as ope
-# import openseespyvis.Get_Rendering as opsplt
-# import opsvis as opsv
-import openseespy.postprocessing.ops_vis as opsv
-import openseespy.postprocessing.Get_Rendering as opsplt
+import openseespyvis.Get_Rendering as opsplt
+import opsvis as opsv
+#import openseespy.postprocessing.ops_vis as opsv
+#import openseespy.postprocessing.Get_Rendering as opsplt
 import matplotlib.pyplot as plt
 from dash import Dash, dash_table, dcc, html, Input, Output, State, callback
 from numpy import zeros
@@ -117,7 +117,7 @@ def Predimencionamiento_1(df_x, df_y, df_z):
 
     """ PREDIMENSIONAMIENTO de Columna Central """
     Area_col_c = float((D(str(P_servicio))/(D(str(0.45))*D(str(fc)))))
-    print(Area_col_c)
+    
     a = float(round(math.ceil(D(str(math.sqrt(Area_col_c)))/D(str(0.05)))*D(str(0.05)),2))
 
     mini = max(L_max/12, 0.2)
@@ -642,7 +642,7 @@ def getCombo(E030,MF,modo,Tmodes,NT,ni, Ux, Uy, Rz):
 
 def AnalisisDinamicoModalEspectral(E030,MF,modo,Tmodes,nz,ni, Ux, Uy, Rz, VS, df_z):
     DDx, ΔDx, VDx, DDy, ΔDy, VDy, df4 = getCombo(E030,MF,modo,Tmodes,3*nz,ni, Ux, Uy, Rz)
-    print('\nANÁLISIS DINÁMICO SIN ESCALAR')
+    #print('\nANÁLISIS DINÁMICO SIN ESCALAR')
     df4 = df4.astype({'Nivel':int})
     df4 = df4.round(4)
 
@@ -751,7 +751,7 @@ def VigaColFinal(a, b, h, df_z, df_x, L_max):
     fig_columna.add_traces(go.Mesh3d(
             x=[a+1.2, -1.2-a],
             y=[a+1.2, -1.2-a],
-            z=[ha+1.5, ha+1.5],
+            z=[ha+0.5, ha+0.5],
         
         ))
     

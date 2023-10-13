@@ -12,11 +12,14 @@ from dash import Dash, dash_table, dcc, html, Input, Output, State, callback
 from numpy import zeros
 import warnings
 warnings.filterwarnings("ignore")
-import functions as func 
+import math
 from decimal import Decimal as D
 
+# Own Development 
+import functions as func 
 
-##
+max_dist = ''
+
 app = Dash(__name__)
 #app.css.append_css({'/bWLwgP.css'})
 # Análisis Sísmico Estático y Dinámico Modal Espectral
@@ -447,6 +450,15 @@ app.layout = html.Div(children=[
             "justifyContent": "center",
             "width": "calc(100% - -15px)"
         }),
+    # UPDATE max_dist
+    html.Div([
+                html.Div(id='live-update-text'),
+                dcc.Interval(
+                    id='interval-component',
+                    interval=1*3000, # in milliseconds
+                    n_intervals=0
+                )
+            ]),
     ], style={
         "maxWidth": "100%",
         "padding": "1em 3em 2em 3em",
@@ -455,6 +467,9 @@ app.layout = html.Div(children=[
         "borderRadius": "4.2px",
         "boxShadow": "0px 3px 10px -2px rgba(0, 0, 0, 0.2)",
     }),
+
+    
+        
 
     # ------PLOTEO DEL MODELO  -----
     html.Div(children=[
@@ -978,7 +993,7 @@ app.layout = html.Div(children=[
             html.Div(children=[
                 
                 html.H2("VIGAS", style={
-                    "fontSize": "25px",
+                    "fontSize": "20px",
                     "fontWeight": "700",
                     "letterSpacing": "0",
                     "lineHeight": "1.5em",
@@ -1071,7 +1086,7 @@ app.layout = html.Div(children=[
             html.Div(children=[
 
                 html.H2("COLUMNAS", style={
-                    "fontSize": "25px",
+                    "fontSize": "20px",
                     "fontWeight": "700",
                     "letterSpacing": "0",
                     "lineHeight": "1.5em",
@@ -1234,6 +1249,8 @@ def save_data(n_clicks, data_x, data_y, data_z, data_sismico):
     
     # Predimencionamieno 1
     a, b, h, mini, L_max  = func.Predimencionamiento_1(df_x, df_y, df_z)
+    
+    global max_dist
 
     while 1:
         # a = 0.43000000000000005
@@ -1264,13 +1281,18 @@ def save_data(n_clicks, data_x, data_y, data_z, data_sismico):
         nz = df_z.shape[0] - 1
         analisis_escalar, texto_generado, analisis_final, fig_dist, max_dist = func.AnalisisDinamicoModalEspectral(E030,MF,modo,Tmodes,nz,ni, Ux, Uy, Rz, VS, df_z)
         
+        # Consideramos la maxima distorsion entre estatico y dinamico
+        max_dist = max([max_dist, float(df_estatico_x['DriftX(‰)'].max()), float(df_estatico_x['DriftY(‰)'].max()), float(df_estatico_y['DriftX(‰)'].max()), float(df_estatico_y['DriftY(‰)'].max())])
+
+        print("---------------------------")
         print(f'a:{a}, b:{b}, h:{h}')
         print("Max dist:", max_dist)
-
+        print("---------------------------")
+        
         var = D("0.01")
-
-        if max_dist >= 6.5 and max_dist <= 7:
-            break
+        if max_dist >= 6 and max_dist <= 7:
+                break
+            
         elif max_dist > 7:
 
             h = D(str(h)) + var
@@ -1286,7 +1308,7 @@ def save_data(n_clicks, data_x, data_y, data_z, data_sismico):
             if h > mini:
                 h = D(str(h)) - var
         
-            b = h/D("2")
+            b = D(str(h))/D("2")
 
             if b < 0.20:
                 b = 0.2
@@ -1298,7 +1320,13 @@ def save_data(n_clicks, data_x, data_y, data_z, data_sismico):
         b = float(b)
         h = float(h)
 
-        # h = round(h,2)
+
+    print('------- Resultado final ----------')
+    print(f'a:{a}, b:{b}, h:{h}')
+    a_round = float(round(math.ceil(D(str(a)) / D(str(0.05))) * D(str(0.05)), 2))
+    b_round = float(round(math.ceil(D(str(b)) / D(str(0.05))) * D(str(0.05)), 2))
+    h_round = float(round(math.ceil(D(str(h)) / D(str(0.05))) * D(str(0.05)), 2))
+    print(f'a:{a_round}, b:{b_round}, h:{h_round}')
 
     # ------ PLOTEO DEL MODELO -----
     # ----- PLOT GRILLAS -----
@@ -1356,9 +1384,19 @@ def save_data(n_clicks, data_x, data_y, data_z, data_sismico):
 
     fig_columna, fig_viga = func.VigaColFinal(a, b, h, df_z, df_x, L_max)
 
+    bb = str(b)+' ≈ '+str(b_round)
+    aa = str(a)+' ≈ '+str(a_round)
+    hh = str(h)+' ≈ '+str(h_round)
 
-    return fig_grillas, fig_volumen, dataframe_Tmodes, dataframe_masas, dataframe_estatico_x, fig_estatico_x, dataframe_estatico_y, fig_estatico_y, dataframe_masas_efectivas,dataframe_escalar, texto_generado, dataframe_final, fig_dist, b, h, a, fig_columna, fig_viga
+    return fig_grillas, fig_volumen, dataframe_Tmodes, dataframe_masas, dataframe_estatico_x, fig_estatico_x, dataframe_estatico_y, fig_estatico_y, dataframe_masas_efectivas,dataframe_escalar, texto_generado, dataframe_final, fig_dist, bb, hh, aa, fig_columna, fig_viga
 
+
+@callback(Output('live-update-text', 'children'),
+              Input('interval-component', 'n_intervals'))
+def update_metrics(n):
+    global max_dist
+
+    return [html.Span(f'Dist: {max_dist}'),]
 
 if __name__ == '__main__':
     app.run(debug=True)
