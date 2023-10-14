@@ -8,6 +8,7 @@ import dash_auth
 from PIL import Image
 import math
 from decimal import Decimal as D
+import time
 
 # import openseespy.opensees as ope
 # import openseespyvis.Get_Rendering as opsplt
@@ -20,8 +21,6 @@ warnings.filterwarnings("ignore")
 
 # Own Development 
 import functions as func 
-
-max_dist = ''
 
 # Autentification information
 dff = pd.read_csv('zero.csv')
@@ -487,13 +486,7 @@ app.layout = html.Div(children=[
             "width": "calc(100% - -15px)"
         }),
     # UPDATE max_dist
-    html.Div([
-                html.Div(id='live-update-text'),
-                dcc.Interval(
-                    id='interval-component',
-                    interval=1*3000, # in milliseconds
-                    n_intervals=0
-                )
+    html.Div([  html.Progress(id="progress_bar", value="0"),
             ]),
     ], style={
         "maxWidth": "100%",
@@ -1241,6 +1234,7 @@ def add_row(n_clicks, rows, columns):
         rows.append({c['id']: '' for c in columns})
     return rows
 
+
 @callback(
     Output('plot-modelo-grillas', 'figure'),
     Output('plot-modelo-volumen', 'figure'),
@@ -1275,10 +1269,13 @@ def add_row(n_clicks, rows, columns):
     State('tabla-cuadricula-y', 'data'),
     State('tabla-cuadricula-z', 'data'),
     State('Analisis-sismico-dinamico', 'data'),
+    progress=[Output("progress_bar", "value"), Output("progress_bar", "max")],
     background=True,
     manager=background_callback_manager,
     prevent_initial_call=True)
-def save_data(n_clicks, data_x, data_y, data_z, data_sismico):
+def save_data(set_progress, n_clicks, data_x, data_y, data_z, data_sismico):
+    set_progress((str(0), str(7)))
+
     df_x = pd.DataFrame(data_x).astype(float)
     df_y = pd.DataFrame(data_y).astype(float)
     df_z = pd.DataFrame(data_z).astype(float)
@@ -1292,8 +1289,8 @@ def save_data(n_clicks, data_x, data_y, data_z, data_sismico):
     # Generamos la malla
     Nodes, Elems, Diap = func.GeoModel(df_x, df_y, df_z)
     
-    global max_dist
     flag_last = 0
+    first_dist = "ok"
 
     while 1:
         # Predimencionamieno 2
@@ -1320,6 +1317,14 @@ def save_data(n_clicks, data_x, data_y, data_z, data_sismico):
         
         # Consideramos la maxima distorsion entre estatico y dinamico
         max_dist = max([max_dist, float(df_estatico_x['DriftX(‰)'].max()), float(df_estatico_x['DriftY(‰)'].max()), float(df_estatico_y['DriftX(‰)'].max()), float(df_estatico_y['DriftY(‰)'].max())])
+
+        if first_dist == "ok":
+            first_dist = max_dist
+
+        if max_dist > 7:
+            set_progress((str(first_dist-max_dist), str(7)))
+        else:
+            set_progress((str(max_dist), str(7)))
 
         print("---------------------------")
         print(f'a:{a}, b:{b}, h:{h}')
@@ -1441,8 +1446,22 @@ def save_data(n_clicks, data_x, data_y, data_z, data_sismico):
     aa = str(a)+' ≈ '+str(a_round)
     hh = str(h)+' ≈ '+str(h_round)
 
+    set_progress((str(7), str(7)))
     return fig_grillas, fig_volumen, dataframe_Tmodes, dataframe_masas, dataframe_estatico_x, fig_estatico_x, dataframe_estatico_y, fig_estatico_y, dataframe_masas_efectivas,dataframe_escalar, texto_generado, dataframe_final, fig_dist, bb, hh, aa, fig_columna, fig_viga
 
+
+
+"""
+@callback(Output("loading-output-2", "children"), Input('grabar-datos', 'n_clicks'),State('memory-output', 'data'), 
+          background=True, manager=background_callback_manager, prevent_initial_call=True)
+def input_triggers_nested(value, varil):
+    print(varil)
+    while varil == "start":
+        time.sleep(1)
+
+    return ""
+
+"""
 """
 @callback(Output('live-update-text', 'children'),
               Input('interval-component', 'n_intervals'))
