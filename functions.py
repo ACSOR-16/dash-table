@@ -1,14 +1,15 @@
 import numpy as np
 import pandas as pd
 import openseespy.opensees as ope
-#import openseespyvis.Get_Rendering as opsplt
-#import opsvis as opsv
-import openseespy.postprocessing.ops_vis as opsv
-import openseespy.postprocessing.Get_Rendering as opsplt
+import openseespyvis.Get_Rendering as opsplt
+import opsvis as opsv
+#import openseespy.postprocessing.ops_vis as opsv
+#import openseespy.postprocessing.Get_Rendering as opsplt
 import matplotlib.pyplot as plt
 from dash import Dash, dash_table, dcc, html, Input, Output, State, callback
 from numpy import zeros
 from PIL import Image, ImageChops
+import plotly.graph_objects as go
 
 import math
 from decimal import Decimal as D
@@ -155,10 +156,6 @@ def Predimencionamiento_2(a, b, h):
 
 # ---- CREACION DEL MODELO ----
 def GeoModel(df_x, df_y, df_z):
-    ope.reset()  # This command is used to set the state of the domain to its original state.
-    ope.wipeAnalysis() # This command is used to destroy all components of the Analysis object.
-    ope.wipe() # This command is used to destroy all constructed objects.
-    ope.model('basic', '-ndm', 3, '-ndf', 6)
 
     Lx = df_x["Espaciado"].sum()
     Ly = df_y["Espaciado"].sum()
@@ -228,8 +225,12 @@ def GeoModel(df_x, df_y, df_z):
 
 
 
-def ModelamientoNodos(Nodes, Elems, Diap, Ac, Jxxc, Iyc, Izc, Av, Jxxv, Iyv, Izv, a, b, h):
-    
+def ModelamientoNodos(Nodes, Elems, Diap, Ac, Jxxc, Iyc, Izc, Av, Jxxv, Iyv, Izv, a, b, h, flag_last):
+    ope.reset()  # This command is used to set the state of the domain to its original state.
+    ope.wipeAnalysis() # This command is used to destroy all components of the Analysis object.
+    ope.wipe() # This command is used to destroy all constructed objects.
+    ope.model('basic', '-ndm', 3, '-ndf', 6)
+
     RigidDiaphragm = 'ON'
     #  ----- CREANDO NODOS DEL MODELO ----
     for Ni in Nodes:
@@ -267,12 +268,13 @@ def ModelamientoNodos(Nodes, Elems, Diap, Ac, Jxxc, Iyc, Izc, Av, Jxxv, Iyv, Izv
             ope.element('elasticBeamColumn', int(Ele[0]), int(Ele[1]), int(Ele[2]), Av, E, G, Jxxv, Iyv, Izv, int(Ele[3]),'-mass', ρ*Av*((Ele[4]-a)/Ele[4])) # ρ*Av*((dx-a)/dx))  #  #ρ*Av*(dy-a)/dy) # considerarr cuanndo la viga esta en x o y
 
     # ------ PLOTEO DEL MODELO ----
-    plt.figure() # dpi=600
-    opsv.plot_model(fig_wi_he=(30., 40.),az_el=(-130,20), )
-    plt.savefig('plots/modelo_grillas.jpg')
-    im = Image.open('plots/modelo_grillas.jpg')
-    im = trim(im)
-    im.save('plots/modelo_grillas.jpg')
+    if flag_last == 1:
+        plt.figure() # dpi=600
+        opsv.plot_model(fig_wi_he=(30., 40.),az_el=(-130,20), )
+        plt.savefig('plots/modelo_grillas.jpg')
+        im = Image.open('plots/modelo_grillas.jpg')
+        im = trim(im)
+        im.save('plots/modelo_grillas.jpg')
 
     ele_shapes = {}
     for i in range(len(Elems)):
@@ -283,12 +285,13 @@ def ModelamientoNodos(Nodes, Elems, Diap, Ac, Jxxc, Iyc, Izc, Av, Jxxv, Iyv, Izv
         else:
             print('Error. No es ni elemento viga ni columna.')
     
-    plt.figure()
-    opsv.plot_extruded_shapes_3d(ele_shapes, fig_wi_he=(40.0, 32.0), az_el=(-130,20),fig_lbrt = (0, 0, 1, 1))
-    plt.savefig("plots/modelo_volumen.jpg")
-    im = Image.open("plots/modelo_volumen.jpg")
-    im = trim(im)
-    im.save("plots/modelo_volumen.jpg")
+    if flag_last == 1:
+        plt.figure()
+        opsv.plot_extruded_shapes_3d(ele_shapes, fig_wi_he=(40.0, 32.0), az_el=(-130,20),fig_lbrt = (0, 0, 1, 1))
+        plt.savefig("plots/modelo_volumen.jpg")
+        im = Image.open("plots/modelo_volumen.jpg")
+        im = trim(im)
+        im.save("plots/modelo_volumen.jpg")
 
 
 
@@ -407,7 +410,7 @@ def AsignacionMasasModosVibracion(Nodes, Elems, df_z, df_sismico):
     #print(E030[0],k)
     return Tmodes, MF, H, df_Tmodes
 
-def AnalisisEstaticoX(Tmodes, MF, H, df_x, df_y, df_z, Diap, df_sismico):
+def AnalisisEstaticoX(Tmodes, MF, H, df_x, df_y, df_z, Diap, df_sismico, flag_last):
     np.set_printoptions(precision=3,linewidth=300,suppress=True)
     #H = np.arange(1,nz+1)*dz
     P = sum(MF[0::3,0::3])*9.80665 # Peso por nivel
@@ -462,19 +465,20 @@ def AnalisisEstaticoX(Tmodes, MF, H, df_x, df_y, df_z, Diap, df_sismico):
         df1_x = pd.concat([df1_x, df2_x])
     #print('\nANÁLISIS ESTÁTICO EN X')
     #print(df1_x.round(4))
-    plt.figure()
-    opsv.plot_defo(100,fig_wi_he=(30., 25.),az_el=(-130,20))
-    plt.savefig("plots/deformacion_x.jpg")
-    im = Image.open("plots/deformacion_x.jpg")
-    im = trim(im)
-    im.save("plots/deformacion_x.jpg")
+    if flag_last == 1:
+        plt.figure()
+        opsv.plot_defo(100,fig_wi_he=(30., 25.),az_el=(-130,20))
+        plt.savefig("plots/deformacion_x.jpg")
+        im = Image.open("plots/deformacion_x.jpg")
+        im = trim(im)
+        im.save("plots/deformacion_x.jpg")
 
     df1_x = df1_x.round(4)
 
     return F, E030, df1_x
     
 
-def AnalisisEstaticoY(Tmodes, MF, H,F, df_x, df_y, df_z, Diap):
+def AnalisisEstaticoY(Tmodes, MF, H,F, df_x, df_y, df_z, Diap, flag_last):
     ope.loadConst('-time', 0.0)
     ope.remove('timeSeries',1)
     ope.remove('loadPattern',1)
@@ -515,12 +519,13 @@ def AnalisisEstaticoY(Tmodes, MF, H,F, df_x, df_y, df_z, Diap):
         df1_y = pd.concat([df1_y, df2_y])
     #print('\nANÁLISIS ESTÁTICO EN Y')
     #print(df1_y.round(4))
-    plt.figure()
-    opsv.plot_defo(200,fig_wi_he=(30., 25.),az_el=(-130,20))
-    plt.savefig("plots/deformacion_y.jpg")
-    im = Image.open("plots/deformacion_y.jpg")
-    im = trim(im)
-    im.save("plots/deformacion_y.jpg")
+    if flag_last == 1:
+        plt.figure()
+        opsv.plot_defo(200,fig_wi_he=(30., 25.),az_el=(-130,20))
+        plt.savefig("plots/deformacion_y.jpg")
+        im = Image.open("plots/deformacion_y.jpg")
+        im = trim(im)
+        im.save("plots/deformacion_y.jpg")
 
     df1_y = df1_y.round(4)
 
@@ -640,7 +645,7 @@ def getCombo(E030,MF,modo,Tmodes,NT,ni, Ux, Uy, Rz):
     return DDx, ΔDx, VDx, DDy, ΔDy, VDy, df_1
 
 
-def AnalisisDinamicoModalEspectral(E030,MF,modo,Tmodes,nz,ni, Ux, Uy, Rz, VS, df_z):
+def AnalisisDinamicoModalEspectral(E030,MF,modo,Tmodes,nz,ni, Ux, Uy, Rz, VS, df_z, flag_last):
     DDx, ΔDx, VDx, DDy, ΔDy, VDy, df4 = getCombo(E030,MF,modo,Tmodes,3*nz,ni, Ux, Uy, Rz)
     #print('\nANÁLISIS DINÁMICO SIN ESCALAR')
     df4 = df4.astype({'Nivel':int})
@@ -690,6 +695,7 @@ def AnalisisDinamicoModalEspectral(E030,MF,modo,Tmodes,nz,ni, Ux, Uy, Rz, VS, df
     vecY = np.array(df5.loc[:,'Δy(‰)'])
     lim = 1.1*max(vecX.max(),vecY.max())
     #
+    """
     plt.figure()
     plt.plot(np.insert(vecX,0,0),np.arange(nz+1),'bo--',label='drift X',lw = 0.8)
     plt.plot(np.insert(vecY,0,0),np.arange(nz+1),'ro--',label='drift Y',lw = 0.8)
@@ -702,35 +708,39 @@ def AnalisisDinamicoModalEspectral(E030,MF,modo,Tmodes,nz,ni, Ux, Uy, Rz, VS, df
     im = Image.open("plots/distorsion_din.jpg")
     im = trim(im)
     im.save("plots/distorsion_din.jpg")
+    """
 
-    import plotly.graph_objects as go
-    fig_dist = go.Figure()
+    if flag_last == 1:
+        fig_dist = go.Figure()
 
-    f_vecX = [0] + list(vecX)
-    f_vecY = [0] + list(vecY)
-    y = [i for i in range(len(f_vecY))]
-    # Add traces
-    fig_dist.add_trace(go.Scatter(x=f_vecX, y=y, text=f_vecX,
-                        mode='lines+markers',
-                        name='drift X'))
-    fig_dist.add_trace(go.Scatter(x=f_vecY, y=y, text=f_vecY,
-                        mode='lines+markers',
-                        line = dict(shape = 'linear',dash = 'dash'),
-                        connectgaps = True,
-                        name='drift Y'))
-    fig_dist.update_xaxes(title_text = "Distorsión (‰)")
-    fig_dist.update_yaxes(title_text = "Nivel")
-    fig_dist.update_layout(legend=dict(
-                                        orientation="h",
-                                        yanchor="bottom",
-                                        y=1.02,
-                                        xanchor="right",
-                                        x=1))
+        f_vecX = [0] + list(vecX)
+        f_vecY = [0] + list(vecY)
+        y = [i for i in range(len(f_vecY))]
+        # Add traces
+        fig_dist.add_trace(go.Scatter(x=f_vecX, y=y, text=f_vecX,
+                            mode='lines+markers',
+                            name='drift X'))
+        fig_dist.add_trace(go.Scatter(x=f_vecY, y=y, text=f_vecY,
+                            mode='lines+markers',
+                            line = dict(shape = 'linear',dash = 'dash'),
+                            connectgaps = True,
+                            name='drift Y'))
+        fig_dist.update_xaxes(title_text = "Distorsión (‰)")
+        fig_dist.update_yaxes(title_text = "Nivel")
+        fig_dist.update_layout(legend=dict(
+                                            orientation="h",
+                                            yanchor="bottom",
+                                            y=1.02,
+                                            xanchor="right",
+                                            x=1))
+    else:
+        f_vecX = [0] + list(vecX)
+        f_vecY = [0] + list(vecY)
+        fig_dist = go.Figure()
 
     return df4, texto1, df5, fig_dist, max(f_vecX+f_vecY)
 
 def VigaColFinal(a, b, h, df_z, df_x, L_max):
-    import plotly.graph_objects as go
 
     #  columna
     ha = df_z['Espaciado'].iloc[0]

@@ -1289,36 +1289,34 @@ def save_data(n_clicks, data_x, data_y, data_z, data_sismico):
     # Predimencionamieno 1
     a, b, h, mini, L_max  = func.Predimencionamiento_1(df_x, df_y, df_z)
     
+    # Generamos la malla
+    Nodes, Elems, Diap = func.GeoModel(df_x, df_y, df_z)
+    
     global max_dist
+    flag_last = 0
 
     while 1:
-        # a = 0.43000000000000005
-        # b = 0.315
-        # h = 0.63
         # Predimencionamieno 2
         Av,  Izv , Iyv, Jxxv, Ac, Izc, Iyc, Jxxc = func.Predimencionamiento_2(a, b, h)
 
-        # Generamos la malla
-        Nodes, Elems, Diap = func.GeoModel(df_x, df_y, df_z)
-    
         # Creacion de nodos y volumen
-        func.ModelamientoNodos(Nodes, Elems, Diap, Ac, Jxxc, Iyc, Izc, Av, Jxxv, Iyv, Izv, a, b, h)
+        func.ModelamientoNodos(Nodes, Elems, Diap, Ac, Jxxc, Iyc, Izc, Av, Jxxv, Iyv, Izv, a, b, h, flag_last)
 
         # Asignacion de masas y modos de vibracion
         Tmodes, MF, H, df_Tmodes= func.AsignacionMasasModosVibracion(Nodes, Elems, df_z, df_sismico)
 
         # Analisis estatico en X
-        F, E030, df_estatico_x = func.AnalisisEstaticoX(Tmodes, MF, H, df_x, df_y, df_z, Diap, df_sismico)
+        F, E030, df_estatico_x = func.AnalisisEstaticoX(Tmodes, MF, H, df_x, df_y, df_z, Diap, df_sismico, flag_last)
 
         # Analisis estatico en Y
-        VS, df_estatico_y = func.AnalisisEstaticoY(Tmodes, MF, H,F, df_x, df_y, df_z, Diap)
+        VS, df_estatico_y = func.AnalisisEstaticoY(Tmodes, MF, H,F, df_x, df_y, df_z, Diap, flag_last)
 
         # Masas efectivas
         ni, modo, Ux, Uy, Rz, df_masas_efectivas = func.MasasEfectivas(df_z, MF, Tmodes)
 
         # Analisis dinamico modal espectral
         nz = df_z.shape[0] - 1
-        analisis_escalar, texto_generado, analisis_final, fig_dist, max_dist = func.AnalisisDinamicoModalEspectral(E030,MF,modo,Tmodes,nz,ni, Ux, Uy, Rz, VS, df_z)
+        analisis_escalar, texto_generado, analisis_final, fig_dist, max_dist = func.AnalisisDinamicoModalEspectral(E030,MF,modo,Tmodes,nz,ni, Ux, Uy, Rz, VS, df_z, flag_last)
         
         # Consideramos la maxima distorsion entre estatico y dinamico
         max_dist = max([max_dist, float(df_estatico_x['DriftX(‰)'].max()), float(df_estatico_x['DriftY(‰)'].max()), float(df_estatico_y['DriftX(‰)'].max()), float(df_estatico_y['DriftY(‰)'].max())])
@@ -1359,6 +1357,22 @@ def save_data(n_clicks, data_x, data_y, data_z, data_sismico):
         b = float(b)
         h = float(h)
 
+    flag_last = 1
+    #----------------------------------------------------------------------------
+    # Creacion de nodos y volumen
+    func.ModelamientoNodos(Nodes, Elems, Diap, Ac, Jxxc, Iyc, Izc, Av, Jxxv, Iyv, Izv, a, b, h, flag_last)
+    # Asignacion de masas y modos de vibracion
+    Tmodes, MF, H, df_Tmodes= func.AsignacionMasasModosVibracion(Nodes, Elems, df_z, df_sismico)
+    # Analisis estatico en X
+    F, E030, df_estatico_x = func.AnalisisEstaticoX(Tmodes, MF, H, df_x, df_y, df_z, Diap, df_sismico, flag_last)
+    # Analisis estatico en Y
+    VS, df_estatico_y = func.AnalisisEstaticoY(Tmodes, MF, H,F, df_x, df_y, df_z, Diap, flag_last)
+    # Masas efectivas
+    ni, modo, Ux, Uy, Rz, df_masas_efectivas = func.MasasEfectivas(df_z, MF, Tmodes)
+    # Analisis dinamico modal espectral
+    nz = df_z.shape[0] - 1
+    analisis_escalar, texto_generado, analisis_final, fig_dist, max_dist = func.AnalisisDinamicoModalEspectral(E030,MF,modo,Tmodes,nz,ni, Ux, Uy, Rz, VS, df_z, flag_last)
+    #----------------------------------------------------------------------------
 
     print('------- Resultado final ----------')
     print(f'a:{a}, b:{b}, h:{h}')
