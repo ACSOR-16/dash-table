@@ -486,8 +486,12 @@ app.layout = html.Div(children=[
             "width": "calc(100% - -15px)"
         }),
     # UPDATE max_dist
-    html.Div([  html.Progress(id="progress_bar", value="0"),
-            ]),
+    html.Div([  
+        html.Progress(id="progress_bar", value="0"),
+        ], style={
+            "display": "flex",
+            "justifyContent": "center",
+            }),
     ], style={
         "maxWidth": "100%",
         "padding": "1em 3em 2em 3em",
