@@ -491,6 +491,7 @@ app.layout = html.Div(children=[
         ], style={
             "display": "flex",
             "justifyContent": "center",
+            "padding": "2em 3em 2em 4em",
             }),
     ], style={
         "maxWidth": "100%",
