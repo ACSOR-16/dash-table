@@ -1,10 +1,10 @@
 import numpy as np
 import pandas as pd
 import openseespy.opensees as ope
-#import openseespyvis.Get_Rendering as opsplt
-#import opsvis as opsv
-import openseespy.postprocessing.ops_vis as opsv
-import openseespy.postprocessing.Get_Rendering as opsplt
+import openseespyvis.Get_Rendering as opsplt
+import opsvis as opsv
+#import openseespy.postprocessing.ops_vis as opsv
+#import openseespy.postprocessing.Get_Rendering as opsplt
 import matplotlib.pyplot as plt
 from dash import Dash, dash_table, dcc, html, Input, Output, State, callback
 from numpy import zeros
@@ -40,8 +40,10 @@ wLive = 200*kg/m**2
 wLosa = 360*kg/m**2 
 wAcab = 100*kg/m**2
 wTabi = 100*kg/m**2
-wTotal = 1.0*(wLosa+wAcab+wTabi)+0.25*wLive
-
+wEntre_piso = 1.0*(wLosa+wAcab+wTabi)+0.25*wLive
+wAzotea = 100*kg/m**2
+wUltimo_piso = 1.0*(wLosa+wAcab)+0.25*wAzotea
+ 
 
 def trim(im):
     bg = Image.new(im.mode, im.size, im.getpixel((0,0)))
@@ -109,7 +111,7 @@ def Predimencionamiento_1(df_x, df_y, df_z):
     #print('PESO_TABIQ',P_tabiqueria)
     P_acabados = max_Atributaria_cent*wAcab*float(df_z.shape[0]-1)
     #print('PESO_ACAB',P_acabados)
-    P_azotea = max_Atributaria_cent*wAcab
+    P_azotea = max_Atributaria_cent*wAzotea
     #print('PESO_AZOTEA',P_azotea)
     P_live = max_Atributaria_cent*wLive*float(df_z.shape[0]-2)
     #print('PESO_LIVE',P_live)
@@ -335,7 +337,8 @@ def GetStaticLoads(coef,p,h,T):
 def AsignacionMasasModosVibracion(Nodes, Elems, df_z, df_sismico):
     # Aplicando Cargas vivas y muertas
     df_E = pd.DataFrame(Elems, columns = ['n_element', 'node_1', 'node_2', 'col_viga','espaciado'])
-    
+    altura = df_z['Espaciado'].sum()  # debe ser igual a = Ni[3]
+
     for Ni in Nodes:
         # Base
         if Ni[4] == 0:
@@ -344,20 +347,32 @@ def AsignacionMasasModosVibracion(Nodes, Elems, df_z, df_sismico):
         elif Ni[4] == 0.25:
             xx = (df_E[((df_E['node_1']==Ni[0])|(df_E['node_2']==Ni[0]))&(df_E['col_viga']==2)]['espaciado']/2).sum()
             yy = (df_E[((df_E['node_1']==Ni[0])|(df_E['node_2']==Ni[0]))&(df_E['col_viga']==3)]['espaciado']/2).sum()
-            carga = wTotal*xx*yy
-            ope.mass(int(Ni[0]), carga, carga,0.0)
+            if altura == Ni[3]:
+                carga = wUltimo_piso*xx*yy
+                ope.mass(int(Ni[0]), carga, carga,0.0)
+            else:
+                carga = wEntre_piso*xx*yy
+                ope.mass(int(Ni[0]), carga, carga,0.0)
         # Perimetrales
         elif Ni[4] == 0.5:
             xx = (df_E[((df_E['node_1']==Ni[0])|(df_E['node_2']==Ni[0]))&(df_E['col_viga']==2)]['espaciado']/2).sum()
             yy = (df_E[((df_E['node_1']==Ni[0])|(df_E['node_2']==Ni[0]))&(df_E['col_viga']==3)]['espaciado']/2).sum()
-            carga = wTotal*xx*yy
-            ope.mass(int(Ni[0]), carga, carga,0.0)
+            if altura == Ni[3]:
+                carga = wUltimo_piso*xx*yy
+                ope.mass(int(Ni[0]), carga, carga,0.0)
+            else:
+                carga = wEntre_piso*xx*yy
+                ope.mass(int(Ni[0]), carga, carga,0.0)
         # Centrales
         else:
             xx = (df_E[((df_E['node_1']==Ni[0])|(df_E['node_2']==Ni[0]))&(df_E['col_viga']==2)]['espaciado']/2).sum()
             yy = (df_E[((df_E['node_1']==Ni[0])|(df_E['node_2']==Ni[0]))&(df_E['col_viga']==3)]['espaciado']/2).sum()
-            carga = wTotal*xx*yy
-            ope.mass(int(Ni[0]), carga, carga,0.0)
+            if altura == Ni[3]:
+                carga = wUltimo_piso*xx*yy
+                ope.mass(int(Ni[0]), carga, carga,0.0)
+            else:
+                carga = wEntre_piso*xx*yy
+                ope.mass(int(Ni[0]), carga, carga,0.0)
 
     # Obtenemos los modos
     Nmodes = int(df_z.shape[0]-1) * 3
