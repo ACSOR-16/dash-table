@@ -294,7 +294,6 @@ def ModelamientoNodos(Nodes, Elems, Diap, Ac, Jxxc, Iyc, Izc, Av, Jxxv, Iyv, Izv
         im.save("plots/modelo_volumen.jpg")
 
 
-
 def EspectroE030(T,Z=0.45,U=1.5,S=1.0,Tp=0.4,Tl=2.5,R=1):
     n = len(T)
     E030 = zeros(n)
@@ -310,7 +309,6 @@ def EspectroE030(T,Z=0.45,U=1.5,S=1.0,Tp=0.4,Tl=2.5,R=1):
         else:
             print("El periodo no puede ser negativo!")
     return E030*Z*U*S/R
-
 
 
 def GetStaticLoads(coef,p,h,T):
@@ -362,7 +360,7 @@ def AsignacionMasasModosVibracion(Nodes, Elems, df_z, df_sismico):
             ope.mass(int(Ni[0]), carga, carga,0.0)
 
     # Obtenemos los modos
-    Nmodes = 12
+    Nmodes = int(df_z.shape[0]-1) * 3
     # ploteamos el modos de vibracion
     opsplt.plot_modeshape(1, 100)
     opsplt.plot_modeshape(2, 100)
@@ -536,7 +534,7 @@ def MasasEfectivas(df_z, MF, Tmodes):
 
     Tags = ope.getNodeTags()
     nz = int(df_z.shape[0]-1)
-    Nmodes = 12
+    Nmodes = int(df_z.shape[0]-1) * 3
     modo = np.zeros((Nmodes,3*nz))
 
     for j in range(1,Nmodes+1):
