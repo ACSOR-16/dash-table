@@ -880,65 +880,65 @@ app.layout = html.Div(children=[
 
         html.Div(children=[
 
+            # html.Div(children=[
+
+            #     html.Div( children=[
+            #         html.H2("ANÁLISIS DINÁMICO SIN ESCALAR", style={
+            #             "fontSize": "20px",
+            #             "fontWeight": "700",
+            #             "letterSpacing": "0",
+            #             "lineHeight": "1.5em",
+            #             "position": "relative",
+            #             "color": "#15294b",
+            #             "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif",
+            #             "paddingBottom": "0px",
+            #             "marginBottom": "0px"
+            #         }),
+            #         html.Div(children=[
+            #             dash_table.DataTable(
+            #                 id="analisis_escalar",
+            #                 style_cell={
+            #                     'padding': '5px',
+            #                     "textAlign": "center"
+            #                     },
+            #                 style_header={
+            #                     'backgroundColor': '#9aa0a6',
+            #                     'fontWeight': 'bold',
+            #                     "color": "white",
+            #                     "textAlign": "center"
+            #                 }
+            #             )
+            #         ]),
+            #     ], className="table_analisis_dinamico"),
+
+            #     html.Div( children=[
+            #         html.H2("COMPARACIÓN", style={
+            #             "fontSize": "20px",
+            #             "fontWeight": "700",
+            #             "letterSpacing": "0",
+            #             "lineHeight": "1.5em",
+            #             "paddingBottom": "15px",
+            #             "position": "relative",
+            #             "color": "#15294b",
+            #             "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif",
+            #             "marginBottom": "0"
+            #         }),
+            #         html.Div(children=[
+            #             html.P(id="texto-descriptivo")
+
+            #         ]),
+            #     ], className="texto_comparacion",),
+
+            # ], style={
+            #     "display": "flex",
+            #     "justifyContent": "center",
+            #     "alignContent": "center",
+            # }, className="plot_container"), 
+
             html.Div(children=[
 
                 html.Div( children=[
-                    html.H2("ANÁLISIS DINÁMICO SIN ESCALAR", style={
-                        "fontSize": "20px",
-                        "fontWeight": "700",
-                        "letterSpacing": "0",
-                        "lineHeight": "1.5em",
-                        "position": "relative",
-                        "color": "#15294b",
-                        "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif",
-                        "paddingBottom": "0px",
-                        "marginBottom": "0px"
-                    }),
-                    html.Div(children=[
-                        dash_table.DataTable(
-                            id="analisis_escalar",
-                            style_cell={
-                                'padding': '5px',
-                                "textAlign": "center"
-                                },
-                            style_header={
-                                'backgroundColor': '#9aa0a6',
-                                'fontWeight': 'bold',
-                                "color": "white",
-                                "textAlign": "center"
-                            }
-                        )
-                    ]),
-                ], className="table_analisis_dinamico"),
-
-                html.Div( children=[
-                    html.H2("COMPARACIÓN", style={
-                        "fontSize": "20px",
-                        "fontWeight": "700",
-                        "letterSpacing": "0",
-                        "lineHeight": "1.5em",
-                        "paddingBottom": "15px",
-                        "position": "relative",
-                        "color": "#15294b",
-                        "fontFamily": "'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif",
-                        "marginBottom": "0"
-                    }),
-                    html.Div(children=[
-                        html.P(id="texto-descriptivo")
-
-                    ]),
-                ], className="texto_comparacion",),
-
-            ], style={
-                "display": "flex",
-                "justifyContent": "center",
-                "alignContent": "center",
-            }, className="plot_container"), 
-
-            html.Div(children=[
-
-                html.Div( children=[
-                    html.H2("ANÁLISIS DINÁMICO FINAL", style={
+                    html.H2("ANÁLISIS DINÁMICO", style={
                         "fontSize": "20px",
                         "fontWeight": "700",
                         "letterSpacing": "0",
@@ -1254,8 +1254,8 @@ def add_row(n_clicks, rows, columns):
 
     Output('masas_efectivas', 'data'),
 
-    Output('analisis_escalar', 'data'),
-    Output('texto-descriptivo', 'children'),
+    # Output('analisis_escalar', 'data'),
+    # Output('texto-descriptivo', 'children'),
     Output('analisis_final', 'data'),
     Output('plot-distorciones', 'figure'),
 
@@ -1451,7 +1451,7 @@ def save_data(set_progress, n_clicks, data_x, data_y, data_z, data_sismico):
     hh = str(h)+' ≈ '+str(h_round)
 
     set_progress((str(7), str(7)))
-    return fig_grillas, fig_volumen, dataframe_Tmodes, dataframe_masas, dataframe_estatico_x, fig_estatico_x, dataframe_estatico_y, fig_estatico_y, dataframe_masas_efectivas,dataframe_escalar, texto_generado, dataframe_final, fig_dist, bb, hh, aa, fig_columna, fig_viga
+    return fig_grillas, fig_volumen, dataframe_Tmodes, dataframe_masas, dataframe_estatico_x, fig_estatico_x, dataframe_estatico_y, fig_estatico_y, dataframe_masas_efectivas, dataframe_final, fig_dist, bb, hh, aa, fig_columna, fig_viga #dataframe_escalar, texto_generado,
 
 
 
