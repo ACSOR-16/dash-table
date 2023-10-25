@@ -1,10 +1,10 @@
 import numpy as np
 import pandas as pd
 import openseespy.opensees as ope
-#import openseespyvis.Get_Rendering as opsplt
-#import opsvis as opsv
-import openseespy.postprocessing.ops_vis as opsv
-import openseespy.postprocessing.Get_Rendering as opsplt
+import openseespyvis.Get_Rendering as opsplt
+import opsvis as opsv
+#import openseespy.postprocessing.ops_vis as opsv
+#import openseespy.postprocessing.Get_Rendering as opsplt
 import matplotlib.pyplot as plt
 from dash import Dash, dash_table, dcc, html, Input, Output, State, callback
 from numpy import zeros
@@ -40,8 +40,10 @@ wLive = 200*kg/m**2
 wLosa = 360*kg/m**2 
 wAcab = 100*kg/m**2
 wTabi = 100*kg/m**2
-wTotal = 1.0*(wLosa+wAcab+wTabi)+0.25*wLive
-
+wEntre_piso = 1.0*(wLosa+wAcab+wTabi)+0.25*wLive
+wAzotea = 100*kg/m**2
+wUltimo_piso = 1.0*(wLosa+wAcab)+0.25*wAzotea
+ 
 
 def trim(im):
     bg = Image.new(im.mode, im.size, im.getpixel((0,0)))
@@ -109,7 +111,7 @@ def Predimencionamiento_1(df_x, df_y, df_z):
     #print('PESO_TABIQ',P_tabiqueria)
     P_acabados = max_Atributaria_cent*wAcab*float(df_z.shape[0]-1)
     #print('PESO_ACAB',P_acabados)
-    P_azotea = max_Atributaria_cent*wAcab
+    P_azotea = max_Atributaria_cent*wAzotea
     #print('PESO_AZOTEA',P_azotea)
     P_live = max_Atributaria_cent*wLive*float(df_z.shape[0]-2)
     #print('PESO_LIVE',P_live)
@@ -294,7 +296,6 @@ def ModelamientoNodos(Nodes, Elems, Diap, Ac, Jxxc, Iyc, Izc, Av, Jxxv, Iyv, Izv
         im.save("plots/modelo_volumen.jpg")
 
 
-
 def EspectroE030(T,Z=0.45,U=1.5,S=1.0,Tp=0.4,Tl=2.5,R=1):
     n = len(T)
     E030 = zeros(n)
@@ -310,7 +311,6 @@ def EspectroE030(T,Z=0.45,U=1.5,S=1.0,Tp=0.4,Tl=2.5,R=1):
         else:
             print("El periodo no puede ser negativo!")
     return E030*Z*U*S/R
-
 
 
 def GetStaticLoads(coef,p,h,T):
@@ -337,7 +337,8 @@ def GetStaticLoads(coef,p,h,T):
 def AsignacionMasasModosVibracion(Nodes, Elems, df_z, df_sismico):
     # Aplicando Cargas vivas y muertas
     df_E = pd.DataFrame(Elems, columns = ['n_element', 'node_1', 'node_2', 'col_viga','espaciado'])
-    
+    altura = df_z['Espaciado'].sum()  # debe ser igual a = Ni[3]
+
     for Ni in Nodes:
         # Base
         if Ni[4] == 0:
@@ -346,23 +347,35 @@ def AsignacionMasasModosVibracion(Nodes, Elems, df_z, df_sismico):
         elif Ni[4] == 0.25:
             xx = (df_E[((df_E['node_1']==Ni[0])|(df_E['node_2']==Ni[0]))&(df_E['col_viga']==2)]['espaciado']/2).sum()
             yy = (df_E[((df_E['node_1']==Ni[0])|(df_E['node_2']==Ni[0]))&(df_E['col_viga']==3)]['espaciado']/2).sum()
-            carga = wTotal*xx*yy
-            ope.mass(int(Ni[0]), carga, carga,0.0)
+            if altura == Ni[3]:
+                carga = wUltimo_piso*xx*yy
+                ope.mass(int(Ni[0]), carga, carga,0.0)
+            else:
+                carga = wEntre_piso*xx*yy
+                ope.mass(int(Ni[0]), carga, carga,0.0)
         # Perimetrales
         elif Ni[4] == 0.5:
             xx = (df_E[((df_E['node_1']==Ni[0])|(df_E['node_2']==Ni[0]))&(df_E['col_viga']==2)]['espaciado']/2).sum()
             yy = (df_E[((df_E['node_1']==Ni[0])|(df_E['node_2']==Ni[0]))&(df_E['col_viga']==3)]['espaciado']/2).sum()
-            carga = wTotal*xx*yy
-            ope.mass(int(Ni[0]), carga, carga,0.0)
+            if altura == Ni[3]:
+                carga = wUltimo_piso*xx*yy
+                ope.mass(int(Ni[0]), carga, carga,0.0)
+            else:
+                carga = wEntre_piso*xx*yy
+                ope.mass(int(Ni[0]), carga, carga,0.0)
         # Centrales
         else:
             xx = (df_E[((df_E['node_1']==Ni[0])|(df_E['node_2']==Ni[0]))&(df_E['col_viga']==2)]['espaciado']/2).sum()
             yy = (df_E[((df_E['node_1']==Ni[0])|(df_E['node_2']==Ni[0]))&(df_E['col_viga']==3)]['espaciado']/2).sum()
-            carga = wTotal*xx*yy
-            ope.mass(int(Ni[0]), carga, carga,0.0)
+            if altura == Ni[3]:
+                carga = wUltimo_piso*xx*yy
+                ope.mass(int(Ni[0]), carga, carga,0.0)
+            else:
+                carga = wEntre_piso*xx*yy
+                ope.mass(int(Ni[0]), carga, carga,0.0)
 
     # Obtenemos los modos
-    Nmodes = 12
+    Nmodes = int(df_z.shape[0]-1) * 3
     # ploteamos el modos de vibracion
     opsplt.plot_modeshape(1, 100)
     opsplt.plot_modeshape(2, 100)
@@ -465,17 +478,43 @@ def AnalisisEstaticoX(Tmodes, MF, H, df_x, df_y, df_z, Diap, df_sismico, flag_la
         df1_x = pd.concat([df1_x, df2_x])
     #print('\nANÁLISIS ESTÁTICO EN X')
     #print(df1_x.round(4))
-    if flag_last == 1:
-        plt.figure()
-        opsv.plot_defo(100,fig_wi_he=(30., 25.),az_el=(-130,20))
-        plt.savefig("plots/deformacion_x.jpg")
-        im = Image.open("plots/deformacion_x.jpg")
-        im = trim(im)
-        im.save("plots/deformacion_x.jpg")
-
     df1_x = df1_x.round(4)
 
-    return F, E030, df1_x
+    if flag_last == 1:
+        #plt.figure()
+        #opsv.plot_defo(100,fig_wi_he=(30., 25.),az_el=(-130,20))
+        #plt.savefig("plots/deformacion_x.jpg")
+        #im = Image.open("plots/deformacion_x.jpg")
+        #im = trim(im)
+        #im.save("plots/deformacion_x.jpg")
+
+        fig_dist_x = go.Figure()
+
+        f_vecX = [0] + df1_x['DriftX(‰)'].to_list()
+        f_vecY = [0] + df1_x['DriftY(‰)'].to_list()
+        y = [i for i in range(len(f_vecY))]
+        # Add traces
+        fig_dist_x.add_trace(go.Scatter(x=f_vecX, y=y, text=f_vecX,
+                            mode='lines+markers',
+                            name='drift X'))
+        fig_dist_x.add_trace(go.Scatter(x=f_vecY, y=y, text=f_vecY,
+                            mode='lines+markers',
+                            line = dict(shape = 'linear',dash = 'dash'),
+                            connectgaps = True,
+                            name='drift Y'))
+        fig_dist_x.update_xaxes(title_text = "Distorsión (‰)")
+        fig_dist_x.update_yaxes(title_text = "Nivel")
+        fig_dist_x.update_layout(legend=dict(
+                                            orientation="h",
+                                            yanchor="bottom",
+                                            y=1.02,
+                                            xanchor="right",
+                                            x=1))
+    else:
+        fig_dist_x = 0
+
+
+    return F, E030, df1_x, fig_dist_x
     
 
 def AnalisisEstaticoY(Tmodes, MF, H,F, df_x, df_y, df_z, Diap, flag_last):
@@ -519,24 +558,50 @@ def AnalisisEstaticoY(Tmodes, MF, H,F, df_x, df_y, df_z, Diap, flag_last):
         df1_y = pd.concat([df1_y, df2_y])
     #print('\nANÁLISIS ESTÁTICO EN Y')
     #print(df1_y.round(4))
-    if flag_last == 1:
-        plt.figure()
-        opsv.plot_defo(200,fig_wi_he=(30., 25.),az_el=(-130,20))
-        plt.savefig("plots/deformacion_y.jpg")
-        im = Image.open("plots/deformacion_y.jpg")
-        im = trim(im)
-        im.save("plots/deformacion_y.jpg")
-
     df1_y = df1_y.round(4)
 
-    return VS, df1_y
+    if flag_last == 1:
+        #plt.figure()
+        #opsv.plot_defo(200,fig_wi_he=(30., 25.),az_el=(-130,20))
+        #plt.savefig("plots/deformacion_y.jpg")
+        #im = Image.open("plots/deformacion_y.jpg")
+        #im = trim(im)
+        #im.save("plots/deformacion_y.jpg")
+
+        fig_dist_y = go.Figure()
+
+        f_vecX = [0] + df1_y['DriftX(‰)'].to_list()
+        f_vecY = [0] + df1_y['DriftY(‰)'].to_list()
+        y = [i for i in range(len(f_vecY))]
+        # Add traces
+        fig_dist_y.add_trace(go.Scatter(x=f_vecX, y=y, text=f_vecX,
+                            mode='lines+markers',
+                            name='drift X'))
+        fig_dist_y.add_trace(go.Scatter(x=f_vecY, y=y, text=f_vecY,
+                            mode='lines+markers',
+                            line = dict(shape = 'linear',dash = 'dash'),
+                            connectgaps = True,
+                            name='drift Y'))
+        fig_dist_y.update_xaxes(title_text = "Distorsión (‰)")
+        fig_dist_y.update_yaxes(title_text = "Nivel")
+        fig_dist_y.update_layout(legend=dict(
+                                            orientation="h",
+                                            yanchor="bottom",
+                                            y=1.02,
+                                            xanchor="right",
+                                            x=1))
+    else:
+        fig_dist_y = 0
+
+
+    return VS, df1_y, fig_dist_y
 
 
 def MasasEfectivas(df_z, MF, Tmodes):
 
     Tags = ope.getNodeTags()
     nz = int(df_z.shape[0]-1)
-    Nmodes = 12
+    Nmodes = int(df_z.shape[0]-1) * 3
     modo = np.zeros((Nmodes,3*nz))
 
     for j in range(1,Nmodes+1):
