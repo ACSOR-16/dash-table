@@ -478,17 +478,43 @@ def AnalisisEstaticoX(Tmodes, MF, H, df_x, df_y, df_z, Diap, df_sismico, flag_la
         df1_x = pd.concat([df1_x, df2_x])
     #print('\nANÁLISIS ESTÁTICO EN X')
     #print(df1_x.round(4))
-    if flag_last == 1:
-        plt.figure()
-        opsv.plot_defo(100,fig_wi_he=(30., 25.),az_el=(-130,20))
-        plt.savefig("plots/deformacion_x.jpg")
-        im = Image.open("plots/deformacion_x.jpg")
-        im = trim(im)
-        im.save("plots/deformacion_x.jpg")
-
     df1_x = df1_x.round(4)
 
-    return F, E030, df1_x
+    if flag_last == 1:
+        #plt.figure()
+        #opsv.plot_defo(100,fig_wi_he=(30., 25.),az_el=(-130,20))
+        #plt.savefig("plots/deformacion_x.jpg")
+        #im = Image.open("plots/deformacion_x.jpg")
+        #im = trim(im)
+        #im.save("plots/deformacion_x.jpg")
+
+        fig_dist_x = go.Figure()
+
+        f_vecX = [0] + df1_x['DriftX(‰)'].to_list()
+        f_vecY = [0] + df1_x['DriftY(‰)'].to_list()
+        y = [i for i in range(len(f_vecY))]
+        # Add traces
+        fig_dist_x.add_trace(go.Scatter(x=f_vecX, y=y, text=f_vecX,
+                            mode='lines+markers',
+                            name='drift X'))
+        fig_dist_x.add_trace(go.Scatter(x=f_vecY, y=y, text=f_vecY,
+                            mode='lines+markers',
+                            line = dict(shape = 'linear',dash = 'dash'),
+                            connectgaps = True,
+                            name='drift Y'))
+        fig_dist_x.update_xaxes(title_text = "Distorsión (‰)")
+        fig_dist_x.update_yaxes(title_text = "Nivel")
+        fig_dist_x.update_layout(legend=dict(
+                                            orientation="h",
+                                            yanchor="bottom",
+                                            y=1.02,
+                                            xanchor="right",
+                                            x=1))
+    else:
+        fig_dist_x = 0
+
+
+    return F, E030, df1_x, fig_dist_x
     
 
 def AnalisisEstaticoY(Tmodes, MF, H,F, df_x, df_y, df_z, Diap, flag_last):
@@ -532,17 +558,43 @@ def AnalisisEstaticoY(Tmodes, MF, H,F, df_x, df_y, df_z, Diap, flag_last):
         df1_y = pd.concat([df1_y, df2_y])
     #print('\nANÁLISIS ESTÁTICO EN Y')
     #print(df1_y.round(4))
-    if flag_last == 1:
-        plt.figure()
-        opsv.plot_defo(200,fig_wi_he=(30., 25.),az_el=(-130,20))
-        plt.savefig("plots/deformacion_y.jpg")
-        im = Image.open("plots/deformacion_y.jpg")
-        im = trim(im)
-        im.save("plots/deformacion_y.jpg")
-
     df1_y = df1_y.round(4)
 
-    return VS, df1_y
+    if flag_last == 1:
+        #plt.figure()
+        #opsv.plot_defo(200,fig_wi_he=(30., 25.),az_el=(-130,20))
+        #plt.savefig("plots/deformacion_y.jpg")
+        #im = Image.open("plots/deformacion_y.jpg")
+        #im = trim(im)
+        #im.save("plots/deformacion_y.jpg")
+
+        fig_dist_y = go.Figure()
+
+        f_vecX = [0] + df1_y['DriftX(‰)'].to_list()
+        f_vecY = [0] + df1_y['DriftY(‰)'].to_list()
+        y = [i for i in range(len(f_vecY))]
+        # Add traces
+        fig_dist_y.add_trace(go.Scatter(x=f_vecX, y=y, text=f_vecX,
+                            mode='lines+markers',
+                            name='drift X'))
+        fig_dist_y.add_trace(go.Scatter(x=f_vecY, y=y, text=f_vecY,
+                            mode='lines+markers',
+                            line = dict(shape = 'linear',dash = 'dash'),
+                            connectgaps = True,
+                            name='drift Y'))
+        fig_dist_y.update_xaxes(title_text = "Distorsión (‰)")
+        fig_dist_y.update_yaxes(title_text = "Nivel")
+        fig_dist_y.update_layout(legend=dict(
+                                            orientation="h",
+                                            yanchor="bottom",
+                                            y=1.02,
+                                            xanchor="right",
+                                            x=1))
+    else:
+        fig_dist_y = 0
+
+
+    return VS, df1_y, fig_dist_y
 
 
 def MasasEfectivas(df_z, MF, Tmodes):

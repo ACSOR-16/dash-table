@@ -1308,10 +1308,10 @@ def save_data(set_progress, n_clicks, data_x, data_y, data_z, data_sismico):
         Tmodes, MF, H, df_Tmodes= func.AsignacionMasasModosVibracion(Nodes, Elems, df_z, df_sismico)
 
         # Analisis estatico en X
-        F, E030, df_estatico_x = func.AnalisisEstaticoX(Tmodes, MF, H, df_x, df_y, df_z, Diap, df_sismico, flag_last)
+        F, E030, df_estatico_x, fig_dist_x = func.AnalisisEstaticoX(Tmodes, MF, H, df_x, df_y, df_z, Diap, df_sismico, flag_last)
 
         # Analisis estatico en Y
-        VS, df_estatico_y = func.AnalisisEstaticoY(Tmodes, MF, H,F, df_x, df_y, df_z, Diap, flag_last)
+        VS, df_estatico_y, fig_dist_y = func.AnalisisEstaticoY(Tmodes, MF, H,F, df_x, df_y, df_z, Diap, flag_last)
 
         # Masas efectivas
         ni, modo, Ux, Uy, Rz, df_masas_efectivas = func.MasasEfectivas(df_z, MF, Tmodes)
@@ -1374,9 +1374,9 @@ def save_data(set_progress, n_clicks, data_x, data_y, data_z, data_sismico):
     # Asignacion de masas y modos de vibracion
     Tmodes, MF, H, df_Tmodes= func.AsignacionMasasModosVibracion(Nodes, Elems, df_z, df_sismico)
     # Analisis estatico en X
-    F, E030, df_estatico_x = func.AnalisisEstaticoX(Tmodes, MF, H, df_x, df_y, df_z, Diap, df_sismico, flag_last)
+    F, E030, df_estatico_x, fig_dist_x = func.AnalisisEstaticoX(Tmodes, MF, H, df_x, df_y, df_z, Diap, df_sismico, flag_last)
     # Analisis estatico en Y
-    VS, df_estatico_y = func.AnalisisEstaticoY(Tmodes, MF, H,F, df_x, df_y, df_z, Diap, flag_last)
+    VS, df_estatico_y, fig_dist_y = func.AnalisisEstaticoY(Tmodes, MF, H,F, df_x, df_y, df_z, Diap, flag_last)
     # Masas efectivas
     ni, modo, Ux, Uy, Rz, df_masas_efectivas = func.MasasEfectivas(df_z, MF, Tmodes)
     # Analisis dinamico modal espectral
@@ -1415,21 +1415,23 @@ def save_data(set_progress, n_clicks, data_x, data_y, data_z, data_sismico):
 
     # ------ ANALISIS ESTATICO EN X ------
     dataframe_estatico_x = df_estatico_x.to_dict("records")
-    
+    """
     img_estatico_x = Image.open("plots/deformacion_x.jpg")
     fig_estatico_x = px.imshow(img = img_estatico_x)
     fig_estatico_x.update_layout(coloraxis_showscale=False) # , width=980, height=1089
     fig_estatico_x.update_xaxes(showticklabels=False)
     fig_estatico_x.update_yaxes(showticklabels=False)
+    """
 
-    # ------ ANALISIS ESTATICO EN X ------
+    # ------ ANALISIS ESTATICO EN Y ------
     dataframe_estatico_y = df_estatico_y.to_dict("records")
-
+    """
     img_estatico_y = Image.open("plots/deformacion_y.jpg")
     fig_estatico_y = px.imshow(img = img_estatico_y)
     fig_estatico_y.update_layout(coloraxis_showscale=False) # , width=980, height=1089
     fig_estatico_y.update_xaxes(showticklabels=False)
     fig_estatico_y.update_yaxes(showticklabels=False)
+    """
 
     # ------ MASAS EFECTIVAS -----
     dataframe_masas_efectivas = df_masas_efectivas.to_dict("records")
@@ -1452,30 +1454,9 @@ def save_data(set_progress, n_clicks, data_x, data_y, data_z, data_sismico):
     hh = str(h)+' ≈ '+str(h_round)
 
     set_progress((str(7), str(7)))
-    return fig_grillas, fig_volumen, dataframe_Tmodes, dataframe_masas, dataframe_estatico_x, fig_estatico_x, dataframe_estatico_y, fig_estatico_y, dataframe_masas_efectivas,dataframe_escalar, texto_generado, dataframe_final, fig_dist, bb, hh, aa, fig_columna, fig_viga
+    return fig_grillas, fig_volumen, dataframe_Tmodes, dataframe_masas, dataframe_estatico_x, fig_dist_x, dataframe_estatico_y, fig_dist_y, dataframe_masas_efectivas,dataframe_escalar, texto_generado, dataframe_final, fig_dist, bb, hh, aa, fig_columna, fig_viga
 
 
-
-"""
-@callback(Output("loading-output-2", "children"), Input('grabar-datos', 'n_clicks'),State('memory-output', 'data'), 
-          background=True, manager=background_callback_manager, prevent_initial_call=True)
-def input_triggers_nested(value, varil):
-    print(varil)
-    while varil == "start":
-        time.sleep(1)
-
-    return ""
-
-"""
-"""
-@callback(Output('live-update-text', 'children'),
-              Input('interval-component', 'n_intervals'))
-def update_metrics(n):
-    global max_dist
-
-    return [html.Span(f'Dist: {max_dist}'),]
-"""
-    
 
 if __name__ == '__main__':
     app.run_server(debug=True)
