@@ -703,7 +703,7 @@ app.layout = html.Div(children=[
             ]),
 
             html.Div( children=[
-                html.H2("PLOTEO DE DEFORMACIÓN X", style={
+                html.H2("PLOTEO DE DERIVAS EN X", style={
                     "fontSize": "20px",
                     "fontWeight": "700",
                     "letterSpacing": "0",
@@ -783,7 +783,7 @@ app.layout = html.Div(children=[
 
             ]),
             html.Div( children=[
-                html.H2("PLOTEO DE DEFORMACIÓN Y", style={
+                html.H2("PLOTEO DE DERIVAS EN Y", style={
                     "fontSize": "20px",
                     "fontWeight": "700",
                     "letterSpacing": "0",
@@ -1389,7 +1389,7 @@ def save_data(set_progress, n_clicks, data_x, data_y, data_z, data_sismico):
     fig_distorciones.update_xaxes(showticklabels=False)
     fig_distorciones.update_yaxes(showticklabels=False)
 
-    fig_columna, fig_viga = func.VigaColFinal(a, b, h, df_z, df_x, L_max)
+    fig_columna, fig_viga = func.VigaColFinal(a_round, b_round, h_round, df_z, df_x, L_max)
 
     bb = str(b)+' ≈ '+str(b_round)
     aa = str(a)+' ≈ '+str(a_round)

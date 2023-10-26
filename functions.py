@@ -32,7 +32,7 @@ g = 9.80665*m/s**2
 # ---- PROPIEDADES DEL MATERIAL Y DE SECCIONES ----
 fc = 210*kg/cm**2
 ρ = 2400*kg/m**3
-E = 151*fc**0.5*kgf/cm**2
+E = 150*fc**0.5*kgf/cm**2
 G = 0.5*E/(1+0.2)
 
 # Aplicando Cargas vivas y muertas
@@ -510,6 +510,7 @@ def AnalisisEstaticoX(Tmodes, MF, H, df_x, df_y, df_z, Diap, df_sismico, flag_la
                                             y=1.02,
                                             xanchor="right",
                                             x=1))
+        fig_dist_x.update_layout(margin=dict(l=0,r=0,b=0,t=1))
     else:
         fig_dist_x = 0
 
@@ -590,6 +591,7 @@ def AnalisisEstaticoY(Tmodes, MF, H,F, df_x, df_y, df_z, Diap, flag_last):
                                             y=1.02,
                                             xanchor="right",
                                             x=1))
+        fig_dist_y.update_layout(margin=dict(l=0,r=0,b=0,t=1))
     else:
         fig_dist_y = 0
 
@@ -798,6 +800,8 @@ def AnalisisDinamicoModalEspectral(E030,MF,modo,Tmodes,nz,ni, Ux, Uy, Rz, VS, df
                                             y=1.02,
                                             xanchor="right",
                                             x=1))
+        fig_dist.update_layout(margin=dict(l=0,r=0,b=0,t=1))
+    
     else:
         f_vecX = [0] + list(vecX)
         f_vecY = [0] + list(vecY)
@@ -826,10 +830,11 @@ def VigaColFinal(a, b, h, df_z, df_x, L_max):
     fig_columna.add_traces(go.Mesh3d(
             x=[a+1.2, -1.2-a],
             y=[a+1.2, -1.2-a],
-            z=[ha+0.5, ha+0.5],
+            z=[ha, ha],
         
         ))
-    
+    fig_columna.update_layout(margin=dict(l=0,r=0,b=0,t=1))
+
     # Viga
     ab = L_max
     fig_viga = go.Figure()
@@ -848,10 +853,11 @@ def VigaColFinal(a, b, h, df_z, df_x, L_max):
 
     fig_viga.add_traces(go.Mesh3d(
             x=[ab+a+0, 0],
-            y=[b+1, 0],
+            y=[b+0.5, -b-0.5],
             z=[h+1, 0],
         
         ))
+    fig_viga.update_layout(margin=dict(l=0,r=0,b=0,t=1))
     
     #fig_viga.update_layout(width=2500, height=600) 
 
